@@ -85,10 +85,10 @@
                    
                      
                      <td>{{$i}}</td>
-                     <td><a href="{{url('edit/sale/'.$sale['id'])}}">{{$sale['invoice_no']}}</a></td>
-                     <td>{{$sale['invoice_date']}}</td>
+                     <td><a href="{{url('edit/sale/'.$sale['id'])}}">{{$sale['doc_no']}}</a></td>
+                     <td>{{$sale['doc_date']}}</td>
                      <td>@if(isset($sale['challan'])){{$sale['challan']['doc_no']}}@endif </td>
-                     <td>@if(isset($sale['challan'])){{$sale['challan']['challan_date']}}@endif</td>
+                     <td>@if(isset($sale['challan'])){{$sale['challan']['doc_date']}}@endif</td>
                     <td>{{$sale['customer']['name']}}</td>
                      <td>{{$sale->total_quantity()}}</td>
                      <td>{{$sale->total_amount}}</td>

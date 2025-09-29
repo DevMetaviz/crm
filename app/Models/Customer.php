@@ -111,7 +111,7 @@ class Customer extends Model
               if($balance>0){
              
              $amount = $this->sales()
-                ->whereDate('invoice_date', '>=', now()->subDays(15))
+                ->whereDate('doc_date', '>=', now()->subDays(15))
                 ->sum('total_amount');
 
                 if($balance>$amount)
@@ -143,16 +143,16 @@ class Customer extends Model
 
            $remaining_limit=$credit_limits-$due_balance;
 
-           $last_sales = $this->sales()->latest('invoice_date')->first();
+           $last_sales = $this->sales()->latest('doc_date')->first();
 
     
         $current_month_sales = $this->sales()
-        ->whereMonth('invoice_date', now()->month)
-        ->whereYear('invoice_date', now()->year)
+        ->whereMonth('doc_date', now()->month)
+        ->whereYear('doc_date', now()->year)
         ->sum('total_amount');
     
     $current_year_sales = $this->sales()
-        ->whereYear('invoice_date', now()->year)
+        ->whereYear('doc_date', now()->year)
         ->sum('total_amount');
 
          
@@ -177,7 +177,7 @@ class Customer extends Model
 
             $all_ins=$this->incoming_stock_list()->where('item_id', $it['id'] )->whereHas('challan', function($q) use($to){
                 if($to!='')
-                  { $q->where('challan_date', '<=', $to); }
+                  { $q->where('doc_date', '<=', $to); }
                 $q->where('status',1);
                 })->get()->toArray();
 
@@ -188,7 +188,7 @@ class Customer extends Model
     
         $all_sales=$this->sale_stock_list()->where('item_id', $it['id'] )->whereHas('sale', function($q) use($to){
                 if($to!='')
-                  { $q->where('invoice_date', '<=', $to); }
+                  { $q->where('doc_date', '<=', $to); }
                 $q->where('status',1);
                 })->get()->toArray();
 
@@ -273,9 +273,9 @@ class Customer extends Model
 
             $all_ins=$this->incoming_stock_list()->where('item_id', $it['id'] )->whereHas('challan', function($q) use($from,$to){
                 if($from!='')
-                  { $q->where('challan_date', '>=', $from); }
+                  { $q->where('doc_date', '>=', $from); }
                 if($to!='')
-                  { $q->where('challan_date', '<=', $to); }
+                  { $q->where('doc_date', '<=', $to); }
                 $q->where('status',1);
                 })->get()->toArray();
 
@@ -290,17 +290,17 @@ class Customer extends Model
 
          // $sale=$this->sale_stock_list()->where('item_id', $it['id'] )->whereHas('sale', function($q) use($from,$to){
          //         if($from!='')
-         //          { $q->where('invoice_date', '>=', $from); }
+         //          { $q->where('doc_date', '>=', $from); }
          //        if($to!='')
-         //          { $q->where('invoice_date', '<=', $to); }
+         //          { $q->where('doc_date', '<=', $to); }
          //        $q->where('status',1);
          //        })->sum(\DB::raw('qty * pack_size'));
 
          $all_sales=$this->sale_stock_list()->where('item_id', $it['id'] )->whereHas('sale', function($q) use($from,$to){
                  if($from!='')
-                  { $q->where('invoice_date', '>=', $from); }
+                  { $q->where('doc_date', '>=', $from); }
                 if($to!='')
-                  { $q->where('invoice_date', '<=', $to); }
+                  { $q->where('doc_date', '<=', $to); }
                 $q->where('status',1);
                 })->get()->toArray();
          $sale=array_sum( array_column(  $all_sales,'total_qty' ) );
@@ -396,19 +396,19 @@ class Customer extends Model
     {
         $ins=$this->incoming_stock_list()->whereHas('challan', function($q) use($from,$to){
                 if($from!='')
-                  { $q->where('challan_date', '>=', $from); }
+                  { $q->where('doc_date', '>=', $from); }
                 if($to!='')
-                  { $q->where('challan_date', '<=', $to); }
+                  { $q->where('doc_date', '<=', $to); }
                 $q->where('status',1);
-                })->get()->sortByDesc('challan.challan_date');
+                })->get()->sortByDesc('challan.doc_date');
     
         $outs=$this->sale_stock_list()->whereHas('sale', function($q) use($from,$to){
                 if($from!='')
-                  { $q->where('invoice_date', '>=', $from); }
+                  { $q->where('doc_date', '>=', $from); }
                 if($to!='')
-                  { $q->where('invoice_date', '<=', $to); }
+                  { $q->where('doc_date', '<=', $to); }
                 $q->where('status',1);
-                })->get()->sortByDesc('sale.invoice_date');
+                })->get()->sortByDesc('sale.doc_date');
 
         $outs1=$this->sale_return_list()->whereHas('sale_return', function($q) use($from,$to){
                 if($from!='')
@@ -441,7 +441,7 @@ class Customer extends Model
                     if($let['challan']['status']==1)
                         $status='Post';
                     $qty=$let['qty']*$let['pack_size'];
-                     $challan=array('id'=>$let['challan']['id'] ,'doc_no'=>$let['challan']['doc_no'] , 'doc_date'=>$let['challan']['challan_date'] , 'item_name'=>$let['item']['item_name'], 'item_code'=>$let['item']['item_code'] , 'qty'=>$qty,'mrp'=>$let['mrp'] ,'batch_no'=>$let['batch_no'] ,'link'=> 'edit/delivery-challan/'.$let['challan']['id'] );
+                     $challan=array('id'=>$let['challan']['id'] ,'doc_no'=>$let['challan']['doc_no'] , 'doc_date'=>$let['challan']['doc_date'] , 'item_name'=>$let['item']['item_name'], 'item_code'=>$let['item']['item_code'] , 'qty'=>$qty,'mrp'=>$let['mrp'] ,'batch_no'=>$let['batch_no'] ,'link'=> 'edit/delivery-challan/'.$let['challan']['id'] );
                      array_push($challans, $challan);
                  }
 
@@ -451,7 +451,7 @@ class Customer extends Model
                     if($let['sale']['status']==1)
                         $status='Post';
                     $qty=$let['qty']*$let['pack_size'];
-                     $sale=array('id'=>$let['sale']['id'] ,'doc_no'=>$let['sale']['invoice_no'] , 'doc_date'=>$let['sale']['invoice_date'] ,  'item_name'=>$let['item']['item_name'], 'item_code'=>$let['item']['item_code'] , 'qty'=>$qty,'mrp'=>$let['mrp'] ,'batch_no'=>$let['batch_no'] ,'link'=> 'edit/sale/'.$let['sale']['id'] );
+                     $sale=array('id'=>$let['sale']['id'] ,'doc_no'=>$let['sale']['doc_no'] , 'doc_date'=>$let['sale']['doc_date'] ,  'item_name'=>$let['item']['item_name'], 'item_code'=>$let['item']['item_code'] , 'qty'=>$qty,'mrp'=>$let['mrp'] ,'batch_no'=>$let['batch_no'] ,'link'=> 'edit/sale/'.$let['sale']['id'] );
                      array_push($sales, $sale);
                  }
 
@@ -497,16 +497,16 @@ class Customer extends Model
     {
         $let_challans=Deliverychallan::where('status',1)->where('customer_id',$this->id)->where(function($q) use($from,$to){
                if($from!='')
-                  { $q->where('challan_date', '>=', $from); }
+                  { $q->where('doc_date', '>=', $from); }
                 if($to!='')
-                  { $q->where('challan_date', '<=', $to); }
+                  { $q->where('doc_date', '<=', $to); }
         })->get();
 
         $let_sales=Sale::where('status',1)->where('customer_id',$this->id)->where(function($q) use($from,$to){
                if($from!='')
-                  { $q->where('invoice_date', '>=', $from); }
+                  { $q->where('doc_date', '>=', $from); }
                 if($to!='')
-                  { $q->where('invoice_date', '<=', $to); }
+                  { $q->where('doc_date', '<=', $to); }
         })->get();
                
          $let_returns=Salereturn::where('status',1)->where('customer_id',$this->id)->where(function($q) use($from,$to){
@@ -536,7 +536,7 @@ class Customer extends Model
                     $status='Unpost';
                     if($let['status']==1)
                         $status='Post';
-                     $challan=array('id'=>$let['id'] ,'doc_no'=>$let['doc_no'] , 'doc_date'=>$let['challan_date'] , 'total_quantity'=>$let->total_quantity(), 'total_amount'=>$let->total_amount(),'item_names'=>$let->item_names() ,'status'=>$status ,'remarks'=>$let['remarks'],'link'=> 'edit/delivery-challan/'.$let['id'] );
+                     $challan=array('id'=>$let['id'] ,'doc_no'=>$let['doc_no'] , 'doc_date'=>$let['doc_date'] , 'total_quantity'=>$let->total_quantity(), 'total_amount'=>$let->total_amount(),'item_names'=>$let->item_names() ,'status'=>$status ,'remarks'=>$let['remarks'],'link'=> 'edit/delivery-challan/'.$let['id'] );
                      array_push($challans, $challan);
                  }
 
@@ -545,7 +545,7 @@ class Customer extends Model
                     $status='Unpost';
                     if($let['status']==1)
                         $status='Post';
-                     $sale=array('id'=>$let['id'] ,'doc_no'=>$let['invoice_no'] , 'doc_date'=>$let['invoice_date'] , 'total_quantity'=>$let->total_quantity(),'total_amount'=>$let->total_amount(),'item_names'=>$let->item_names() ,'status'=>$status ,'remarks'=>$let['remarks'],'link'=> 'edit/sale/'.$let['id'] );
+                     $sale=array('id'=>$let['id'] ,'doc_no'=>$let['doc_no'] , 'doc_date'=>$let['doc_date'] , 'total_quantity'=>$let->total_quantity(),'total_amount'=>$let->total_amount(),'item_names'=>$let->item_names() ,'status'=>$status ,'remarks'=>$let['remarks'],'link'=> 'edit/sale/'.$let['id'] );
                      array_push($sales, $sale);
                  }
 
@@ -626,11 +626,11 @@ class Customer extends Model
                    //          ->orWhere('account_voucherable_type','App\Models\Sale')
                    //          ->whereHas('sale', function($q) use($from,$to){
 
-                   //        $q->orderBy('invoice_date', 'asc');
+                   //        $q->orderBy('doc_date', 'asc');
                    //  if($from!='')
-                   //  { $q->where('invoice_date', '>=', $from); }
+                   //  { $q->where('doc_date', '>=', $from); }
                    // if($to!='')
-                   // { $q->where('invoice_date', '<=', $to); }
+                   // { $q->where('doc_date', '<=', $to); }
                     
                 
                    //            })
@@ -638,11 +638,11 @@ class Customer extends Model
                             ->orWhere('account_voucherable_type','App\Models\Deliverychallan')
                             ->whereHas('challan', function($q) use($from,$to){
 
-                          $q->orderBy('challan_date', 'asc');
+                          $q->orderBy('doc_date', 'asc');
                     if($from!='')
-                    { $q->where('challan_date', '>=', $from); }
+                    { $q->where('doc_date', '>=', $from); }
                    if($to!='')
-                   { $q->where('challan_date', '<=', $to); }
+                   { $q->where('doc_date', '<=', $to); }
                     
                 
                               })
@@ -727,11 +727,11 @@ class Customer extends Model
                    //          ->orWhere('account_voucherable_type','App\Models\Sale')
                    //          ->whereHas('sale', function($q) use($from,$to){
 
-                   //        $q->orderBy('invoice_date', 'asc');
+                   //        $q->orderBy('doc_date', 'asc');
                    //  if($from!='')
-                   //  { $q->where('invoice_date', '>=', $from); }
+                   //  { $q->where('doc_date', '>=', $from); }
                    // if($to!='')
-                   // { $q->where('invoice_date', '<=', $to); }
+                   // { $q->where('doc_date', '<=', $to); }
                     
                 
                    //            })
@@ -739,11 +739,11 @@ class Customer extends Model
                             ->orWhere('account_voucherable_type','App\Models\Deliverychallan')
                             ->whereHas('challan', function($q) use($from,$to){
 
-                          $q->orderBy('challan_date', 'asc');
+                          $q->orderBy('doc_date', 'asc');
                     if($from!='')
-                    { $q->where('challan_date', '>=', $from); }
+                    { $q->where('doc_date', '>=', $from); }
                    if($to!='')
-                   { $q->where('challan_date', '<=', $to); }
+                   { $q->where('doc_date', '<=', $to); }
                     
                 
                               })
@@ -815,11 +815,11 @@ class Customer extends Model
 
                 $date='';
                 if($all['account_voucherable_type']=='App\Models\Sale')
-                  $date=$all['account_voucherable']['invoice_date'];
+                  $date=$all['account_voucherable']['doc_date'];
                 elseif($all['account_voucherable_type']=='App\Models\Deliverychallan')
-                  $date=$all['account_voucherable']['challan_date'];
+                  $date=$all['account_voucherable']['doc_date'];
                 elseif($all['account_voucherable_type']=='App\Models\Voucher')
-                  $date=$all['account_voucherable']['voucher_date'];
+                  $date=$all['account_voucherable']['doc_date'];
                 elseif($all['account_voucherable_type']=='App\Models\Purchase')
                   $date=$all['account_voucherable']['doc_date'];
                 elseif($all['account_voucherable_type']=='App\Models\Purchasereturn')
@@ -832,7 +832,7 @@ class Customer extends Model
 
                 $voucher_no='';
                 if($all['account_voucherable_type']=='App\Models\Sale')
-                  $voucher_no=$all['account_voucherable']['invoice_no'];
+                  $voucher_no=$all['account_voucherable']['doc_no'];
                 elseif($all['account_voucherable_type']=='App\Models\Deliverychallan')
                   $voucher_no=$all['account_voucherable']['doc_no'];
                 elseif($all['account_voucherable_type']=='App\Models\Voucher')
@@ -967,11 +967,11 @@ class Customer extends Model
                    //          ->orWhere('account_voucherable_type','App\Models\Sale')
                    //          ->whereHas('sale', function($q) use($from,$to){
 
-                   //        $q->orderBy('invoice_date', 'asc');
+                   //        $q->orderBy('doc_date', 'asc');
                    //  if($from!='')
-                   //  { $q->where('invoice_date', '>=', $from); }
+                   //  { $q->where('doc_date', '>=', $from); }
                    // if($to!='')
-                   // { $q->where('invoice_date', '<=', $to); }
+                   // { $q->where('doc_date', '<=', $to); }
                     
                 
                    //            })
@@ -979,11 +979,11 @@ class Customer extends Model
                             ->orWhere('account_voucherable_type','App\Models\Deliverychallan')
                             ->whereHas('challan', function($q) use($from,$to){
 
-                          $q->orderBy('challan_date', 'asc');
+                          $q->orderBy('doc_date', 'asc');
                     if($from!='')
-                    { $q->where('challan_date', '>=', $from); }
+                    { $q->where('doc_date', '>=', $from); }
                    if($to!='')
-                   { $q->where('challan_date', '<=', $to); }
+                   { $q->where('doc_date', '<=', $to); }
                     
                 
                               })
@@ -1064,11 +1064,11 @@ class Customer extends Model
                    //          ->orWhere('account_voucherable_type','App\Models\Sale')
                    //          ->whereHas('sale', function($q) use($from,$to){
 
-                   //        $q->orderBy('invoice_date', 'asc');
+                   //        $q->orderBy('doc_date', 'asc');
                    //  if($from!='')
-                   //  { $q->where('invoice_date', '>=', $from); }
+                   //  { $q->where('doc_date', '>=', $from); }
                    // if($to!='')
-                   // { $q->where('invoice_date', '<=', $to); }
+                   // { $q->where('doc_date', '<=', $to); }
                     
                 
                    //            })
@@ -1076,11 +1076,11 @@ class Customer extends Model
                             ->orWhere('account_voucherable_type','App\Models\Deliverychallan')
                             ->whereHas('challan', function($q) use($from,$to){
 
-                          $q->orderBy('challan_date', 'asc');
+                          $q->orderBy('doc_date', 'asc');
                     if($from!='')
-                    { $q->where('challan_date', '>=', $from); }
+                    { $q->where('doc_date', '>=', $from); }
                    if($to!='')
-                   { $q->where('challan_date', '<=', $to); }
+                   { $q->where('doc_date', '<=', $to); }
                     
                 
                               })

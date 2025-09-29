@@ -221,7 +221,7 @@
     </table>
 
  <?php 
-         $challan_date=date_create($challan['challan_date'] );
+         $challan_date=date_create($challan['doc_date'] );
            $challan_date=date_format($challan_date,"d-M-Y");
 
           $order_date='';

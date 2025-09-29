@@ -113,7 +113,7 @@
                <div class="col-md-6">
                     <div class="form-group">
                   <label>Voucher No</label>
-                  <input type="text" class="form-control"  name="voucher_no" id="voucher_no"  value="{{ request('voucher_no') }}" >
+                  <input type="text" class="form-control"  name="doc_no" id="doc_no"  value="{{ request('doc_no') }}" >
                 </div>
               </div>
 
@@ -138,8 +138,8 @@
               
               <option value="updated_at" @if(request('sort_by')=='updated_at') selected @endif >Update Date</option>
                <option value="created_at" @if(request('sort_by')=='created_at') selected @endif >Create Date</option> 
-               <option value="voucher_no" @if(request('sort_by')=='voucher_no') selected @endif >Voucher No</option>
-               <option value="voucher_date" @if(request('sort_by')=='voucher_date') selected @endif >Voucher Date</option>     
+               <option value="doc_no" @if(request('sort_by')=='doc_no') selected @endif >Voucher No</option>
+               <option value="doc_date" @if(request('sort_by')=='doc_date') selected @endif >Voucher Date</option>     
               
             </select>
         </div>
@@ -194,8 +194,8 @@
                      
                      <td>{{$i}}</td>
                      
-                     <td><a href="{{url('voucher/'.$category.'/'.$order['id'].'/edit')}}">{{$order['voucher_no']}}</a></td>
-                    <td>{{$order['voucher_date']}}</td>
+                     <td><a href="{{url('voucher/'.$category.'/'.$order['id'].'/view')}}">{{$order['doc_no']}}</a></td>
+                    <td>{{$order['doc_date']}}</td>
                     <td>{{$order['pay_method']}}</td>
                      <?php $let=$order['accounts']->where('pivot.credit','<>','0')->first();  ?>
                     <td>{{$let['pivot']['cheque_no']}}</td>
@@ -216,7 +216,7 @@
 
                       <td>@if($order['updated_at']!=''){{date('d-m-Y h:i a',strtotime($order['updated_at']))}}@endif</td>
                     
-                     <td><a href="{{url('voucher/'.$category.'/'.$order['id'].'/edit')}}"><span class="fa fa-edit"></span></a></td>
+                     <td><a href="{{url('voucher/'.$category.'/'.$order['id'].'/view')}}"><span class="fa fa-edit"></span></a></td>
                    
                     
                  

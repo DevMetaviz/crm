@@ -11,9 +11,8 @@ use App\Models\Transection;
 use App\Models\Company;
 use App\Models\Branch;
 use Illuminate\Support\Facades\Auth;
-use PDF;
-
 use Illuminate\Support\Facades\File as FileFacade;
+use PDF;
 
 class VoucherController extends Controller
 {
@@ -44,13 +43,13 @@ class VoucherController extends Controller
 
        $query->where('category',$category);
 
-       if($request->voucher_no!='')
-        { $query->where('voucher_no', 'LIKE' , '%'.$request->voucher_no.'%'); }
+       if($request->doc_no!='')
+        { $query->where('doc_no', 'LIKE' , '%'.$request->doc_no.'%'); }
 
         if($from!='')
-        { $query->where('voucher_date', '>=', $from); }
+        { $query->where('doc_date', '>=', $from); }
         if($to!='')
-        { $query->where('voucher_date', '<=', $to); }
+        { $query->where('doc_date', '<=', $to); }
 
         if($request->company_id!='')
         { $query->where('company_id', $request->company_id); }
@@ -131,7 +130,7 @@ die;
 
           $doc_no=$voucher_type_code."-".Date("y")."-".Date("m")."-";
            $num=1;
-            $find=Voucher::where('voucher_type_id',$voucher_type['id'])->where('voucher_no','like',$doc_no.'%')->orderBy('voucher_no','desc')->first();
+            $find=Voucher::where('voucher_type_id',$voucher_type['id'])->where('doc_no','like',$doc_no.'%')->orderBy('doc_no','desc')->first();
 
          
          if($find=='')
@@ -141,7 +140,7 @@ die;
          }
          else
          {
-            $let=explode($doc_no , $find['voucher_no']);
+            $let=explode($doc_no , $find['doc_no']);
             $num=intval($let[1]) + 1;
             $let=sprintf('%03d', $num);
               $doc_no=$doc_no. $let;
@@ -162,7 +161,7 @@ die;
       if(!isset($voucher['id']))
         {
             $voucher=new Voucher;
-           $voucher->voucher_no=$doc_no;
+           $voucher->doc_no=$doc_no;
            //$voucher->pay_method='cash';
          }
          else{
@@ -179,21 +178,21 @@ die;
     public function store_new(Request $request)
 {
     $validated = $request->validate([
-        'voucher_no' => 'required|unique:vouchers,voucher_no',
-        'voucher_date' => 'required|date',
+        'doc_no' => 'required|unique:vouchers,doc_no',
+        'doc_date' => 'required|date',
         'category' => 'required|in:payment,receipt,expense',
        // 'main_account_id' => 'required|exists:accounts,id',
         //'accounts.*.account_id' => 'required|exists:accounts,id',
         //'accounts.*.amount' => 'required|numeric|min:1',
         'proofs.*' => 'image|mimes:jpg,jpeg,png|max:2048'
     ], [
-        'voucher_no.required'   => 'Voucher number is required.',
-        'voucher_no.unique'     => 'This voucher number is already in use.',
-        'category.in'           => 'Category must be either payment, receipt, or expense.',
-        'proofs.*.image'        => 'Each proof file must be an image.',
-        'proofs.*.mimes'        => 'Proofs must be jpg, jpeg, or png.',
-        'proofs.*.max'          => 'Proofs must not exceed 2MB.',
-    ]
+    'doc_no.required'   => 'Voucher number is required.',
+    'doc_no.unique'     => 'This voucher number is already in use.',
+    'category.in'           => 'Category must be either payment, receipt, or expense.',
+    'proofs.*.image'        => 'Each proof file must be an image.',
+    'proofs.*.mimes'        => 'Proofs must be jpg, jpeg, or png.',
+    'proofs.*.max'          => 'Proofs must not exceed 2MB.',
+]
 ); 
 
 
@@ -233,8 +232,8 @@ die;
     // Save Voucher
     $voucher = Voucher::create([
         'voucher_type_id' => $voucher_type_id,
-        'voucher_no' => $validated['voucher_no'],
-        'voucher_date' => $validated['voucher_date'],
+        'doc_no' => $validated['doc_no'],
+        'doc_date' => $validated['doc_date'],
         'pay_method' => $pay_method,
        'remarks' => $request->remarks,
        'status' => 0,
@@ -268,7 +267,7 @@ die;
                 { $debit=$account['amount']; $credit=0; }
 
 
-         $voucher->accounts()->attach($account['account_id'] , ['account_voucherable_id'=>$voucher['id'],'account_voucherable_type'=>'App\Models\Voucher', 'transection_date'=>$voucher['voucher_date'], 'remarks' => $account['remarks'] , 'cheque_no' => $account['cheque_no'] ,'cheque_date'=>$account['cheque_date'] ,'debit'=>$debit ,'credit'=>$credit  ]);
+         $voucher->accounts()->attach($account['account_id'] , ['account_voucherable_id'=>$voucher['id'],'account_voucherable_type'=>'App\Models\Voucher', 'transection_date'=>$voucher['doc_date'], 'remarks' => $account['remarks'] , 'cheque_no' => $account['cheque_no'] ,'cheque_date'=>$account['cheque_date'] ,'debit'=>$debit ,'credit'=>$credit  ]);
 
 
                
@@ -278,7 +277,7 @@ die;
                { $debit=0; $credit=$account['amount']; }
 
 
-          $voucher->accounts()->attach($pay_to , ['account_voucherable_id'=>$voucher['id'],'account_voucherable_type'=>'App\Models\Voucher', 'transection_date'=>$voucher['voucher_date'], 'remarks' => $account['remarks']  , 'cheque_no' => $account['cheque_no'],'cheque_date'=>$account['cheque_date'] ,'debit'=>$debit ,'credit'=>$credit  ]);
+          $voucher->accounts()->attach($pay_to , ['account_voucherable_id'=>$voucher['id'],'account_voucherable_type'=>'App\Models\Voucher', 'transection_date'=>$voucher['doc_date'], 'remarks' => $account['remarks']  , 'cheque_no' => $account['cheque_no'],'cheque_date'=>$account['cheque_date'] ,'debit'=>$debit ,'credit'=>$credit  ]);
             
            }
 
@@ -305,18 +304,19 @@ die;
 
 public function update_new(Request $request, $id)
 {
-    //dd($_FILES);
     $voucher = Voucher::findOrFail($id);
+
+    //dd($_FILES);
 
     // validate
     $validated = $request->validate([
-        'voucher_no'   => 'required|unique:vouchers,voucher_no,' . $voucher->id,
-        'voucher_date' => 'required|date',
+        'doc_no'   => 'required|unique:vouchers,doc_no,' . $voucher->id,
+        'doc_date' => 'required|date',
         'category'     => 'required|in:payment,receipt,expense',
         'proofs.*'     => 'image|mimes:jpg,jpeg,png|max:2048',
     ], [
-        'voucher_no.required'   => 'Voucher number is required.',
-        'voucher_no.unique'     => 'This voucher number is already in use.',
+        'doc_no.required'   => 'Voucher number is required.',
+        'doc_no.unique'     => 'This voucher number is already in use.',
         'category.in'           => 'Category must be either payment, receipt, or expense.',
         'proofs.*.image'        => 'Each proof file must be an image.',
         'proofs.*.mimes'        => 'Proofs must be jpg, jpeg, or png.',
@@ -348,8 +348,8 @@ public function update_new(Request $request, $id)
     // update voucher
     $voucher->update([
         'voucher_type_id' => $voucher_type_id,
-        'voucher_no'      => $validated['voucher_no'],
-        'voucher_date'    => $validated['voucher_date'],
+        'doc_no'      => $validated['doc_no'],
+        'doc_date'    => $validated['doc_date'],
         'pay_method'      => $pay_method,
         'remarks'         => $request->remarks,
         //'status'          => $status,
@@ -389,7 +389,7 @@ public function update_new(Request $request, $id)
                 $item->account_id=$account['account_id'];
                 $item->account_voucherable_id=$voucher['id'];
                 $item->account_voucherable_type='App\Models\Voucher';
-                $item->transection_date=$voucher['voucher_date'];
+                $item->transection_date=$voucher['doc_date'];
                 $item->remarks=$account['remarks'];
                 $item->cheque_no=$account['cheque_no'];
                 $item->cheque_date=$account['cheque_date'];
@@ -416,7 +416,7 @@ public function update_new(Request $request, $id)
                 $item1->account_id=$pay_to;
                 $item1->account_voucherable_id=$voucher['id'];
                 $item1->account_voucherable_type='App\Models\Voucher';
-                $item1->transection_date=$voucher['voucher_date'];
+                $item1->transection_date=$voucher['doc_date'];
                 $item1->remarks=$account['remarks'];
                 $item1->cheque_no=$account['cheque_no'];
                 $item1->cheque_date=$account['cheque_date'];
@@ -438,6 +438,10 @@ public function update_new(Request $request, $id)
 
    
 
+   
+    
+     $uploadedFiles=[] ;
+
     // handle proofs
     if ($request->hasFile('proofs')) {
         foreach ($request->file('proofs') as $file) {
@@ -454,18 +458,22 @@ public function update_new(Request $request, $id)
             ];
         }
 
-        return response()->json([
-            'success' => true,
-            'files' => $uploadedFiles
-        ]);
+        
 
     }
 
 
     $msg = ucfirst($category) . ' updated successfully.';
-    return redirect()->back()->with(['success' => $msg, 'voucher_id' => $voucher->id, 'files' => $uploadedFiles]);
-    // return redirect()->back()->with(['success' => $msg, 'voucher_id' => $voucher->id, 'files' => $uploadedFiles]);
 
+
+    return response()->json([
+            'success' => true,
+            'msg' => $msg,
+            'files' => $uploadedFiles
+        ]);
+
+    //return redirect()->back()->with(['success' => $msg, 'voucher_id' => $voucher->id, 'files' => $uploadedFiles]);
+    
 }
 
 public function deleteFile($id)
@@ -494,7 +502,6 @@ public function deleteFile($id)
 
     return response()->json(['success' => true, 'message' => 'File deleted successfully']);
 }
-
 
   public function destroy_new(Voucher $voucher)
     {
@@ -597,15 +604,15 @@ public function deleteFile($id)
          $voucher_type=Configuration::find($voucher_type_id);
          $voucher_type_code=$voucher_type['attributes'];
           
-           $voucher_date=$request->voucher_date;
-            $let=explode('-', $voucher_date);
+           $doc_date=$request->doc_date;
+            $let=explode('-', $doc_date);
             $month=$let[1];
             $year=$let[0];
 
-          $doc_no=$voucher_type_code."-".Date("y",strtotime($voucher_date))."-".$month."-";
+          $doc_no=$voucher_type_code."-".Date("y",strtotime($doc_date))."-".$month."-";
            $num=1;
 
-           $voucher=Voucher::where('voucher_type_id',$voucher_type['id'])->where('voucher_no','like',$doc_no.'%')->orderBy('voucher_no','desc')->first();
+           $voucher=Voucher::where('voucher_type_id',$voucher_type['id'])->where('doc_no','like',$doc_no.'%')->orderBy('doc_no','desc')->first();
 
          
          if($voucher=='')
@@ -615,7 +622,7 @@ public function deleteFile($id)
          }
          else
          {
-            $let=explode($doc_no , $voucher['voucher_no']);
+            $let=explode($doc_no , $voucher['doc_no']);
             $num=intval($let[1]) + 1;
             $let=sprintf('%03d', $num);
               $doc_no=$doc_no. $let;
@@ -638,8 +645,6 @@ public function deleteFile($id)
      */
     public function store(Request $request)
     {
-
-
         $chln=Voucher::where('voucher_no',$request->voucher_no)->first();
             if($chln!='')
              return redirect()->back()->with('error','Voucher no. already existed!');
@@ -1590,7 +1595,6 @@ public function deleteFile($id)
          return redirect()->back()->with('success','Expense updated!');
          
     }
-
 
     //end expense funtions
 }

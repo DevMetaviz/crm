@@ -217,7 +217,7 @@ $branches=[];
         $challan=new Deliverychallan;
 
         $challan->doc_no=$request->doc_no;
-        $challan->challan_date=$request->challan_date;
+        $challan->doc_date=$request->doc_date;
         
         
         $challan->status=$status;
@@ -525,7 +525,7 @@ $branches=[];
         $challan= Deliverychallan::find($request->id);
 
         $challan->doc_no=$request->doc_no;
-        $challan->challan_date=$request->challan_date;
+        $challan->doc_date=$request->doc_date;
         
         
         $challan->status=$status;
@@ -658,7 +658,7 @@ $branches=[];
     public function new_customer_challan(Request $request)
     {
         $customer_id=$request->customer_id;
-          $orders=Deliverychallan::select('id','doc_no','challan_date','customer_id')->where('customer_id',$customer_id)->where('status','1')->orderBy('doc_no','desc')->doesntHave('sale_invoice')->get();
+          $orders=Deliverychallan::select('id','doc_no','doc_date','customer_id')->where('customer_id',$customer_id)->where('status','1')->orderBy('doc_no','desc')->doesntHave('sale_invoice')->get();
 
           return response()->json($orders, 200);
     }

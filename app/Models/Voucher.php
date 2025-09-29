@@ -12,8 +12,8 @@ class Voucher extends Model
     use HasFactory;
 
      protected $fillable = [
-        'voucher_no',
-        'voucher_date',
+        'doc_no',
+        'doc_date',
         'pay_method',
        'voucher_type_id',
         'remarks',
@@ -86,15 +86,15 @@ class Voucher extends Model
          $voucher_type=Configuration::find($voucher_type_id);
          $voucher_type_code=$voucher_type['attributes'];
           
-           $voucher_date=$request['voucher_date'];
-            $let=explode('-', $voucher_date);
+           $doc_date=$request['doc_date'];
+            $let=explode('-', $doc_date);
             $month=$let[1];
             $year=$let[0];
 
-          $doc_no=$voucher_type_code."-".Date("y",strtotime($voucher_date))."-".$month."-";
+          $doc_no=$voucher_type_code."-".Date("y",strtotime($doc_date))."-".$month."-";
            $num=1;
 
-           $voucher=Voucher::where('voucher_type_id',$voucher_type['id'])->where('voucher_no','like',$doc_no.'%')->orderBy('voucher_no','desc')->first();
+           $voucher=Voucher::where('voucher_type_id',$voucher_type['id'])->where('doc_no','like',$doc_no.'%')->orderBy('doc_no','desc')->first();
 
          
          if($voucher=='')
@@ -104,7 +104,7 @@ class Voucher extends Model
          }
          else
          {
-            $let=explode($doc_no , $voucher['voucher_no']);
+            $let=explode($doc_no , $voucher['doc_no']);
             $num=intval($let[1]) + 1;
             $let=sprintf('%03d', $num);
               $doc_no=$doc_no. $let;

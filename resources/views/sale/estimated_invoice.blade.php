@@ -1,6 +1,6 @@
     @extends('layout.pdf-master')
 
-    @section('title', $order['invoice_no'])
+    @section('title', $order['doc_no'])
     @section('header-title', 'Sale Invoice')
 
 
@@ -9,9 +9,9 @@
 
     <div class="od-dt">
 
-    <p><b>Invoice No:</b>&nbsp;&nbsp;&nbsp;{{$order['invoice_no']}} ({{$order['branch']['name']}})</p>
+    <p><b>Invoice No:</b>&nbsp;&nbsp;&nbsp;{{$order['doc_no']}} ({{$order['branch']['name']}})</p>
 
-    <p><b>Invoice Date: </b>{{$order['invoice_date']}}</p>
+    <p><b>Invoice Date: </b>{{$order['doc_date']}}</p>
     <p><b>Invoice Due Date: </b>{{$order['due_date']}}</p>
     <p class="name"><b>Customer: </b>{{$order['customer']['account']['code'].' '.$order['customer']['name']}}</p>
     <p><b>Mobile: </b>{{$order['customer']['mobile']}}</p>

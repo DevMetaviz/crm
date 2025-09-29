@@ -157,7 +157,7 @@ class UserController extends Controller
              $year = now()->year;
 
 $topCustomersYear = Sale::selectRaw('customer_id, SUM(total_amount) as total_sales')
-    ->whereYear('invoice_date', $year)
+    ->whereYear('doc_date', $year)
     ->groupBy('customer_id')
     ->orderByDesc('total_sales')
     ->take(5)
@@ -172,8 +172,8 @@ $topCustomersYear = Sale::selectRaw('customer_id, SUM(total_amount) as total_sal
 
 
 $topCustomersMonth = Sale::selectRaw('customer_id, SUM(total_amount) as total_sales')
-    ->whereYear('invoice_date', now()->year)
-    ->whereMonth('invoice_date', now()->month)
+    ->whereYear('doc_date', now()->year)
+    ->whereMonth('doc_date', now()->month)
     ->groupBy('customer_id')
     ->orderByDesc('total_sales')
     ->take(5)

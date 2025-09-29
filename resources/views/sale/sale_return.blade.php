@@ -120,14 +120,14 @@
 
                   <div class="form-group col-md-4">
                   <label>Invoice No.</label>
-                  <input type="text" form="purchase_demand" name="invoice_no" class="form-control" value="{{ $order->invoice_no ?? $order->sale->invoice_no ?? '' }}"  readonly> 
+                  <input type="text" form="purchase_demand" name="invoice_no" class="form-control" value="{{ $order->invoice_no ?? $order->sale->doc_no ?? '' }}"  readonly> 
                    <input type="hidden" form="purchase_demand" name="invoice_id" class="form-control" value="{{ old('invoice_id', $order->invoice_id) }}"  > 
                   </div>
 
 
                 <div class="form-group col-md-4">
                   <label>Invoice Date</label>
-                  <input type="date" form="purchase_demand" name="invoice_date" class="form-control" value="{{ old('invoice_date', $order->sale->invoice_date ?? '') }}"  readonly>
+                  <input type="date" form="purchase_demand" name="invoice_date" class="form-control" value="{{ old('invoice_date', $order->sale->doc_date ?? '') }}"  readonly>
                   </div>
 
                   

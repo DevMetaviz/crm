@@ -166,11 +166,11 @@
     <div class="form-row">
         <div class="form-group col-md-3">
             <label>Voucher No</label>
-            <input type="text" name="voucher_no" class="form-control" value="{{$voucher['voucher_no']}}" readonly required>
+            <input type="text" name="doc_no" class="form-control" value="{{$voucher['doc_no']}}" readonly required>
         </div>
         <div class="form-group col-md-3">
             <label>Voucher Date</label>
-            <input type="date" name="voucher_date" class="form-control" value="{{ old('voucher_date', $voucher->voucher_date ?? date('Y-m-d')) }}" onchange="setDocNo('date')" required>
+            <input type="date" name="doc_date" class="form-control" value="{{ old('doc_date', $voucher->doc_date ?? date('Y-m-d')) }}" onchange="setDocNo('date')" required>
         </div>
 
             <div class="col-md-3 form-group">
@@ -552,8 +552,8 @@
     submitHandler: function(form) {
         // Optional check for images if needed
         if (selectedFiles.length === 0) {
-            alert('Please select at least one image.');
-            return;
+            //alert('Please select at least one image.');
+            //return;
         }
 
         // Create FormData and append all form fields
@@ -596,6 +596,11 @@
                 selectedFiles = [];
                 renderPreview(); 
                 form.reset(); 
+
+                //updateRowNumbers();
+                //validateTotals(true); 
+
+                window.location.reload();
 
                 // Add new uploaded files to the existing div
                 if(res.files && res.files.length > 0){
@@ -681,24 +686,24 @@
     }
 
     function setDocNo(change_in)
-    {
+{
 
-    let  default_date='{{$voucher['voucher_date']}}';
-    let  voucher_no='{{$voucher['voucher_no']}}';
+    let  default_date='{{$voucher['doc_date']}}';
+    let  doc_no='{{$voucher['doc_no']}}';
     let  default_pay_method='{{$voucher['pay_method']}}';
 
-    var pay_method=$('select[name="pay_method"]').val();
-    var voucher_date=$('input[name="voucher_date"]').val();
+   var pay_method=$('select[name="pay_method"]').val();
+   var doc_date=$('input[name="doc_date"]').val();
 
-    let category   = '{{$category}}';
+   let category   = '{{$category}}';
 
-    if(change_in=='method'){
-    $('select[name="pay_to"]').empty(); 
-    }
+   if(change_in=='method'){
+   $('select[name="pay_to"]').empty(); 
+   }
 
-    var voucher_type='';
+   var voucher_type='';
 
-    if(pay_method=='bank')
+   if(pay_method=='bank')
     {  
           voucher_type= category =='receipt' ? 30 : 29;
 
@@ -722,12 +727,12 @@
 
         // Convert both to Date objects
         let d1 = new Date(default_date);
-        let d2 = new Date(voucher_date);
+        let d2 = new Date(doc_date);
 
         // Compare year + month
         if (d1.getFullYear() === d2.getFullYear() && d1.getMonth() === d2.getMonth() && default_pay_method==pay_method ) {
             
-            $(`input[name="voucher_no"]`).val(voucher_no); 
+            $(`input[name="doc_no"]`).val(doc_no); 
             return ;
         } else {
             
@@ -736,7 +741,7 @@
            
          
 
-    $.ajax({
+   $.ajax({
                type:'get',
                url:'{{ url("/get/voucher/no/") }}',
                data:{
@@ -744,7 +749,7 @@
                     // "_token": "{{ csrf_token() }}",
                     
                      voucher_type: voucher_type,
-                      voucher_date: voucher_date,
+                      doc_date: doc_date,
                   
 
                },
@@ -754,17 +759,17 @@
                 var doc_no = data['doc_no'];
 
                 
-                  $(`input[name="voucher_no"]`).val(doc_no);
+                  $(`input[name="doc_no"]`).val(doc_no);
 
                }
              });//end ajax
-
-    }
-
-
+    
+}
 
 
-    $(document).ready(function () {
+
+
+   
 
     $('.select2').select2(); 
 
@@ -995,7 +1000,7 @@
     });
 
 
-    });
+    
 
 </script>
 

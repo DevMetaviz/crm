@@ -1,6 +1,6 @@
 
 @extends('layout.master')
-@section('title', 'Voucher')
+@section('title', 'Sale Order')
 @section('header-css')
 
 
@@ -10,51 +10,52 @@
 
     <!-- Content Header (Page header) -->
    
-      <div class="row default-header"  >
-        <div class="col-sm-6">
-          <h1 class="text-capitalize" >{{$voucher['category']}} Voucher</h1>
-         </div>
-        <div class="col-sm-6 text-right">
+       <div class="container-fluid px-3 py-3">
+        <div class="page-header">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h1><i class="fas fa-file-invoice mr-2"></i>Order</h1>
+                </div>
+                <div class="col-md-6">
+                    <div class="action-buttons justify-content-md-end">
 
-           <a  href="{{ url('voucher/'.$voucher['category'].'/'.$voucher['id'].'/edit') }}" class="btn btn-primary"><span class="fas fa-save">&nbsp</span>Edit</a>
 
-            @if(isset($voucher['id']))
-                        <button type="button"  class="btn btn-action" data-toggle="modal" data-target="#modal-del" >
+                        <a href="" class="btn btn-success" >
+                            <i class="fas fa-save"></i> Edit
+                        </a>
+                        <button type="submit" form="delete_form"  class="btn btn-action">
                             <i class="fas fa-trash"></i> Delete
                         </button>
-                        <a class="btn btn-transparent" href="{{url('voucher/'.$voucher['category'].'/create')}}" ><span class="fas fa-plus">&nbsp</span>New</a>
+                        <a href="{{url('order/create')}}" class="btn btn-action">
+                            <i class="fas fa-plus"></i> New
+                        </a>
+                        <a href="{{url('order/history')}}" class="btn btn-action">
+                            <i class="fas fa-history"></i> History
+                        </a>
 
-                        @endif
-           
-                   <a class="btn btn-transparent text-capitalize" href="{{url('voucher/'.$voucher['category'].'/list')}}" ><span class="fas fa-history">&nbsp</span>{{$voucher['category']}} List</a>
-
-            @if(isset($voucher['id']))
-                  
-
-                  <div class="btn-group">
+                          <div class="btn-group">
                     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" >
                       <i class="fa fa-print"></i>&nbsp;Print<i class="caret"></i>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-right">
-                       <li><a href="{{url('/voucher/report/'.$voucher['id'])}}" class="dropdown-item">Voucher</a></li>
-                      <li><a href="{{url('/voucher/report1/'.$voucher['id'])}}" class="dropdown-item">Voucher1</a></li>
-                      <li><a href="{{url('/voucher/report2/'.$voucher['id'])}}" class="dropdown-item">Voucher2</a></li>
-                      
+                      <li><a href="{{url('/order/report/'.$order['id'])}}" class="dropdown-item">Print</a></li>
+                   
+
                     </ul>
                   </div>
-                  @endif
-         
 
-          
+                    </div>
+                </div>
+            </div>
+            <nav aria-label="breadcrumb" class="mt-2">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="#" class="text-white-50">Home</a></li>
+                    <li class="breadcrumb-item"><a href="#" class="text-white-50">Sale</a></li>
+                    <li class="breadcrumb-item active text-white" aria-current="page">Order</li>
+                </ol>
+            </nav>
         </div>
       </div>
-
-         <ol class="breadcrumb default-breadcrumb"  >
-            <li class="breadcrumb-item"><a href="#">Home</a></li>
-            <li class="breadcrumb-item"><a href="#">Voucher</a></li>
-            <li class="breadcrumb-item text-capitalize"><a href="#">{{$voucher['category']}}</a></li>
-            <li class="breadcrumb-item active">View</li>
-          </ol>
   @endsection
 
 @section('content')
@@ -86,35 +87,12 @@
 
 
 
-     <form role="form" id="delete_form" method="POST" action="{{url('/delete_new/voucher/'.$voucher['id'])}}">
+     <form role="form" id="delete_form" method="POST" action="{{url('/delete_new/voucher/'.$order['id'])}}">
      @csrf    
     </form>
 
 
-    <!-- /print modal -->
-          <div class="modal fade" id="modal-print">
-        <div class="modal-dialog">
-          <div class="modal-content bg-gradient-info">
-            <div class="modal-header">
-              <h4 class="modal-title ">Confirmation</h4>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-              <p>Do you want to Print?&hellip;</p>
-            </div>
-            <div class="modal-footer justify-content-between">
-              <button type="button" class="btn btn-outline-light" data-dismiss="modal">No</button>
-              <!-- <button form="button" class="btn btn-outline-light">Yes</button> -->
-              <a class="btn btn-outline-light" id="print_btn"  href="{{url('/voucher/report/'.session()->get('voucher_id') )}}" target="_blank" >Yes</a>
-            </div>
-          </div>
-          <!-- /.modal-content -->
-        </div>
-        <!-- /.modal-dialog -->
-      </div>
-      <!-- /.print modal -->
+   
 
 
      @if(session()->has('success'))
@@ -166,9 +144,10 @@
          <div class="row mb-4">
 
             <div class="col-sm-4">
-                <b>Voucher No: </b>{{$voucher['doc_no']}}<br>
-                <b>Voucher Date: </b>{{$voucher['doc_date']}}<br>
-                <b>Pay Method: </b>{{$voucher->pay_method}}<br>
+                <b>Order No: </b>{{$voucher['doc_no']}}<br>
+                <b>Order Date: </b>{{$voucher['doc_date']}}<br>
+                <b>PO No: </b>{{$voucher->pay_method}}<br>
+                <b>PO Date: </b>{{$voucher->pay_method}}<br>
             </div>
             <div class="col-sm-4">
 

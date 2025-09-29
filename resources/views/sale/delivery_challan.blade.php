@@ -118,7 +118,7 @@
 
                 <div class="form-group col-md-4">
                   <label>Delivery Date</label>
-                  <input type="date" form="purchase_demand" name="challan_date" class="form-control " value="{{ old('challan_date', $order->challan_date ?? date('Y-m-d')) }}" required >
+                  <input type="date" form="purchase_demand" name="doc_date" class="form-control " value="{{ old('doc_date', $order->doc_date ?? date('Y-m-d')) }}" required >
                   </div>
 
                    <!----<div class="form-group">

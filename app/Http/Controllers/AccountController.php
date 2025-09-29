@@ -790,10 +790,24 @@ $customers = DB::table('customers as c')
          }//end if
           elseif($account_id!='')
         {
+
+            $params=[];
+
+            if($request->status!=''){
+                $params['status']=$request->status;
+            }
+
+            if($request->company_id!=''){
+                $params['company_id']=$request->company_id;
+            }
+
+            if($request->branch_id!=''){
+                $params['branch_id']=$request->branch_id;
+            }
             
             $account=Account::find($account_id);
 
-            $ledger=$account->ledger($from,$to,$detail);
+            $ledger=$account->ledger($from,$to,$detail,$params);
           
           $config=array('from'=>$from,'to'=>$to,'account'=>$account,'detail'=>$detail);
 

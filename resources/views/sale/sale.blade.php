@@ -109,13 +109,13 @@
                 <!-- /.form-group -->
                 <div class="form-group col-md-4">
                   <label>Invoice No.</label>
-                  <input type="text" form="purchase_demand" name="invoice_no" class="form-control" value="{{ old('invoice_no', $order->invoice_no) }}" readonly required >
+                  <input type="text" form="purchase_demand" name="doc_no" class="form-control" value="{{ old('doc_no', $order->doc_no) }}" readonly required >
                   </div>
 
 
                 <div class="form-group col-md-4">
                   <label>Invoice Date</label>
-                  <input type="date" form="purchase_demand" name="invoice_date" class="form-control " value="{{ old('invoice_date', $order->invoice_date ?? date('Y-m-d')) }}" required >
+                  <input type="date" form="purchase_demand" name="doc_date" class="form-control " value="{{ old('doc_date', $order->doc_date ?? date('Y-m-d')) }}" required >
                   </div>
 
 
@@ -135,7 +135,7 @@
 
                 <div class="form-group col-md-4">
                   <label>Delivery Date</label>
-                  <input type="date" form="purchase_demand" name="challan_date" class="form-control" value="{{ old('challan_date', $order->challan->challan_date ?? '') }}"  readonly>
+                  <input type="date" form="purchase_demand" name="challan_date" class="form-control" value="{{ old('challan_date', $order->challan->doc_date ?? '') }}"  readonly>
                   </div>
 
                    <div class="form-group col-md-4">

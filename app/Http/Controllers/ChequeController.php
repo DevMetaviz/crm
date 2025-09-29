@@ -98,7 +98,7 @@ class ChequeController extends Controller
      */
     public function show(Cheque $cheque)
     {
-        //
+        
     }
 
     /**

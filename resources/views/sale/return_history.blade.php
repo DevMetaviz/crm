@@ -85,8 +85,8 @@
                      <td>{{$sale['id']}}</td>
                      <td>{{$sale['doc_no']}}</td>
                      <td>{{$sale['doc_date']}}</td>
-                     <td>@if($sale['sale']){{$sale['sale']['invoice_no']}}@endif</td>
-                     <td>@if($sale['sale']){{$sale['sale']['invoice_date']}}@endif</td>
+                     <td>@if($sale['sale']){{$sale['sale']['doc_no']}}@endif</td>
+                     <td>@if($sale['sale']){{$sale['sale']['doc_date']}}@endif</td>
                     <td>{{$sale['customer']['name']}}</td>
                      <td></td>
                      <?php $active='Unpost';

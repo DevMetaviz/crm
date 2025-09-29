@@ -62,7 +62,7 @@ class SalereturnController extends Controller
         $customers=Customer::where('status','1')->get();
         
         //$departments=InventoryDepartment::where('status','like','1')->orderBy('sort_order','asc')->get();
-        //$sales=Sale::select('id','invoice_no','invoice_date')->orderBy('invoice_no','desc')->get()->whereNull('salereturn');
+        //$sales=Sale::select('id','doc_no','doc_date')->orderBy('doc_no','desc')->get()->whereNull('salereturn');
        // $products=inventory::where('department_id','1')->where('status','like','1')->get();
 
          $companies=Company::with('branches')->get();
@@ -88,8 +88,8 @@ class SalereturnController extends Controller
                    
 
                      $order->invoice_id = $clone_challan['id'];
-                      $order->invoice_no = $clone_challan['invoice_no'];
-                      $order->invoice_date = $clone_challan['invoice_date'];
+                      $order->invoice_no = $clone_challan['doc_no'];
+                      $order->invoice_date = $clone_challan['doc_date'];
 
                        $order->customer_id = $clone_challan['customer_id'];
                        $order->company_id = $clone_challan['company_id'];
@@ -306,12 +306,12 @@ class SalereturnController extends Controller
                  
                  $pivot_id=$key['pivot']['id'];
                  $sale_stock_id=$key['pivot']['sale_stock_id'];
-                 $invoice_no='';
+                 $doc_no='';
                     if($sale_stock_id!='')
                  {
                   $s=sale_stock::find($sale_stock_id);
                    if($s!='')
-                    $invoice_no=$s->sale->invoice_no;
+                    $doc_no=$s->sale->doc_no;
                 }
 
                  $unit=$key['pivot']['unit'];
@@ -340,7 +340,7 @@ class SalereturnController extends Controller
 
                   $net_amount =round( $tax_amount + $total ,2 );
 
-                    $item=array('pivot_id'=>$pivot_id,'sale_stock_id'=>$sale_stock_id,'invoice_no'=>$invoice_no,'item_id'=>$key['id'],'location_id'=>$key['department_id'],'location_text'=>$key['department']['name'],'item_name'=>$key['item_name'],'unit'=>$unit,'qty'=>$qty,'pack_size'=>$pack_size,'mrp'=>$mrp,'tp'=>$tp,'batch_no'=>$batch_no,'business_type'=>$business_type,'expiry_date'=>$expiry_date,'total_qty'=>$total_qty,'discount_type'=>$discount_type,'discount_factor'=>$discount_factor,'discounted_value'=>$discounted_value,'rate'=>$rate,'total'=>$total,'tax'=>$tax,'tax_amount'=>$tax_amount,'net_amount'=>$net_amount);
+                    $item=array('pivot_id'=>$pivot_id,'sale_stock_id'=>$sale_stock_id,'invoice_no'=>$doc_no,'item_id'=>$key['id'],'location_id'=>$key['department_id'],'location_text'=>$key['department']['name'],'item_name'=>$key['item_name'],'unit'=>$unit,'qty'=>$qty,'pack_size'=>$pack_size,'mrp'=>$mrp,'tp'=>$tp,'batch_no'=>$batch_no,'business_type'=>$business_type,'expiry_date'=>$expiry_date,'total_qty'=>$total_qty,'discount_type'=>$discount_type,'discount_factor'=>$discount_factor,'discounted_value'=>$discounted_value,'rate'=>$rate,'total'=>$total,'tax'=>$tax,'tax_amount'=>$tax_amount,'net_amount'=>$net_amount);
 
                  array_push($items, $item);
              } //print_r(json_encode($items));die;*/

@@ -109,13 +109,13 @@
                 <!-- /.form-group -->
                 <div class="form-group">
                   <label>Voucher No.</label>
-                  <input type="text" form="purchase_demand" name="voucher_no" id="voucher_no" class="form-control select2" value="" readonly required style="width: 100%;">
+                  <input type="text" form="purchase_demand" name="doc_no" id="doc_no" class="form-control" value="" readonly required style="width: 100%;">
                   </div>
 
 
                 <div class="form-group">
                   <label>Voucher Date</label>
-                  <input type="date" form="purchase_demand" name="voucher_date" id="voucher_date" class="form-control select2" value="{{date('Y-m-d')}}" onchange="setDocNo()" required style="width: 100%;">
+                  <input type="date" form="purchase_demand" name="voucher_date" id="voucher_date" class="form-control" value="{{date('Y-m-d')}}" onchange="setDocNo()" required style="width: 100%;">
                   </div>
 
                 <div class="form-group">

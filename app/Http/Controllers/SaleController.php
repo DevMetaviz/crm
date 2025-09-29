@@ -39,7 +39,7 @@ class SaleController extends Controller
      */
     public function index()
     {
-        $sales=Sale::orderBy('invoice_no', 'desc')->get();
+        $sales=Sale::orderBy('doc_no', 'desc')->get();
 
         return view('sale.sale_history',compact('sales'));
     }
@@ -52,9 +52,9 @@ class SaleController extends Controller
          
            
            if($from!='' || $to!='')
-         $lists=Sale::where('invoice_date','>=',$from)->where('invoice_date','<=',$to)->orderBy('invoice_date','asc')->get();
+         $lists=Sale::where('doc_date','>=',$from)->where('doc_date','<=',$to)->orderBy('doc_date','asc')->get();
        else
-        $lists=Sale::orderBy('invoice_date','asc')->get();
+        $lists=Sale::orderBy('doc_date','asc')->get();
 
          $config=array('from'=>$from,'to'=>$to);
 
@@ -75,7 +75,7 @@ class SaleController extends Controller
 
         $num=1;
 
-         $order=Sale::select('id','invoice_no')->where('invoice_no','like',$doc_no.'%')->orderBy('invoice_no','desc')->where('type',$type)->latest()->first();
+         $order=Sale::select('id','doc_no')->where('doc_no','like',$doc_no.'%')->orderBy('doc_no','desc')->where('type',$type)->latest()->first();
 
          if($order=='')
          {
@@ -84,7 +84,7 @@ class SaleController extends Controller
          }
          else
          {
-            $let=explode($doc_no , $order['invoice_no']);
+            $let=explode($doc_no , $order['doc_no']);
             $num=intval($let[1]) + 1;
             $let=sprintf('%03d', $num);
               $doc_no=$doc_no. $let;
@@ -108,7 +108,7 @@ class SaleController extends Controller
         $num=1;
 
          //->where('type','local')
-         $order=Sale::select('id','invoice_no')->where('invoice_no','like',$doc_no.'%')->orderBy('invoice_no','desc')->latest()->first();
+         $order=Sale::select('id','doc_no')->where('doc_no','like',$doc_no.'%')->orderBy('doc_no','desc')->latest()->first();
          if($order=='')
          {
               $let=sprintf('%03d', $num);
@@ -116,7 +116,7 @@ class SaleController extends Controller
          }
          else
          {
-            $let=explode($doc_no , $order['invoice_no']);
+            $let=explode($doc_no , $order['doc_no']);
             $num=intval($let[1]) + 1;
             $let=sprintf('%03d', $num);
               $doc_no=$doc_no. $let;
@@ -140,7 +140,7 @@ if ($today->month >= 7) {
     $financialYear = ($today->year - 1) . '-' . $today->year;
 }
            $order = new Sale(); // empty instance
-             $order->invoice_no = $doc_no;
+             $order->doc_no = $doc_no;
              $order->financial_year = $financialYear;
 
              $branches=[];
@@ -161,7 +161,7 @@ if ($today->month >= 7) {
 
                      $order->challan_id = $clone_challan['id'];
                       $order->challan_no = $clone_challan['doc_no'];
-                      $order->challan_date = $clone_challan['challan_date'];
+                      $order->challan_date = $clone_challan['doc_date'];
 
                       $order->due_date = $due_date;
                        $order->customer_id = $clone_challan['customer_id'];
@@ -274,7 +274,7 @@ if ($today->month >= 7) {
     public function store(Request $request)
     {
 
-      $chln=Sale::where('invoice_no',$request->doc_no)->first();
+      $chln=Sale::where('doc_no',$request->doc_no)->first();
             if($chln!='')
              return redirect()->back()->withErrors(['error'=>'Invoice No. already existed!']);
 
@@ -319,8 +319,8 @@ if ($today->month >= 7) {
 
         $challan=new Sale;
 
-        $challan->invoice_no=$request->invoice_no;
-        $challan->invoice_date=$request->invoice_date;  
+        $challan->doc_no=$request->doc_no;
+        $challan->doc_date=$request->doc_date;  
         $challan->due_date=$request->due_date;
 
         $challan->invoice_type=$request->invoice_type;
@@ -406,8 +406,8 @@ if ($today->month >= 7) {
            $trans->account_voucherable_type='App\Models\Sale';
            $trans->account_id=$customer_acc;
            //$trans->corporate_id=$item['id'];
-           $trans->transection_date=$challan->invoice_date;
-           $trans->remarks='Ref '.$challan['invoice_no'].': Gst Amount';
+           $trans->transection_date=$challan->doc_date;
+           $trans->remarks='Ref '.$challan['doc_no'].': Gst Amount';
            $trans->debit=$gst_amount;
            $trans->credit=0;
            $trans->save();
@@ -417,8 +417,8 @@ if ($today->month >= 7) {
            $trans->account_voucherable_type='App\Models\Sale';
            $trans->account_id=776;
            //$trans->corporate_id=$item['id'];
-           $trans->transection_date=$challan->invoice_date;
-           $trans->remarks='Ref '.$challan['invoice_no'].': Gst Amount';
+           $trans->transection_date=$challan->doc_date;
+           $trans->remarks='Ref '.$challan['doc_no'].': Gst Amount';
            $trans->debit=0;
            $trans->credit=$gst_amount;
            $trans->save();
@@ -446,7 +446,7 @@ if ($today->month >= 7) {
            $trans->account_voucherable_type='App\Models\Sale';
            $trans->account_id=$customer_acc;
            //$trans->corporate_id=$item['id'];
-           $trans->transection_date=$challan->invoice_date;
+           $trans->transection_date=$challan->doc_date;
            $trans->remarks=$remarks;
            $trans->debit=$amount;
            $trans->credit=0;
@@ -457,7 +457,7 @@ if ($today->month >= 7) {
            $trans->account_voucherable_type='App\Models\Sale';
            $trans->account_id=368;
            //$trans->corporate_id=$item['id'];
-           $trans->transection_date=$challan->invoice_date;
+           $trans->transection_date=$challan->doc_date;
            $trans->remarks=$remarks;
            $trans->debit=0;
            $trans->credit=$amount;
@@ -477,7 +477,7 @@ if ($today->month >= 7) {
                      $trans->account_voucherable_type='App\Models\Sale';
                      $trans->account_id=$acc;
                      //$trans->corporate_id=$item['id'];
-                     $trans->transection_date=$challan->invoice_date;
+                     $trans->transection_date=$challan->doc_date;
                      $trans->remarks=$remarks;
                      $trans->debit=0;
                      $trans->credit=$com;
@@ -489,7 +489,7 @@ if ($today->month >= 7) {
                      $trans->account_voucherable_type='App\Models\Sale';
                      $trans->account_id=369;
                      //$trans->corporate_id=$item['id'];
-                     $trans->transection_date=$challan->invoice_date;
+                     $trans->transection_date=$challan->doc_date;
                      $trans->remarks=$remarks;
                      $trans->debit=$com;
                      $trans->credit=0;
@@ -505,7 +505,7 @@ if ($today->month >= 7) {
            /*$amount=$challan->net_discount();
            if($amount > 0)
            {
-              $remarks="Ref: Discount on Invoice : ".$challan['invoice_no'];
+              $remarks="Ref: Discount on Invoice : ".$challan['doc_no'];
            
 
          
@@ -514,7 +514,7 @@ if ($today->month >= 7) {
            $trans->account_voucherable_type='App\Models\Sale';
            $trans->account_id=$customer_acc;
            //$trans->corporate_id=$item['id'];
-           $trans->transection_date=$challan->invoice_date;
+           $trans->transection_date=$challan->doc_date;
            $trans->remarks=$remarks;
            $trans->debit=0;
            $trans->credit=$amount;
@@ -529,7 +529,7 @@ if ($today->month >= 7) {
            $trans->account_voucherable_type='App\Models\Sale';
            $trans->account_id=$customer_acc;
            //$trans->corporate_id=$item['id'];
-           $trans->transection_date=$challan->invoice_date;
+           $trans->transection_date=$challan->doc_date;
            $trans->remarks='Loading Charges';
            $trans->debit=$challan->loading_charges ;
            $trans->credit=0;
@@ -540,7 +540,7 @@ if ($today->month >= 7) {
            $trans->account_voucherable_type='App\Models\Sale';
            $trans->account_id=998;
            //$trans->corporate_id=$item['id'];
-           $trans->transection_date=$challan->invoice_date;
+           $trans->transection_date=$challan->doc_date;
            $trans->remarks='Loading Charges';
            $trans->debit=0;
            $trans->credit=$challan->loading_charges ;
@@ -555,7 +555,7 @@ if ($today->month >= 7) {
            $trans->account_voucherable_type='App\Models\Sale';
            $trans->account_id=$customer_acc;
            //$trans->corporate_id=$item['id'];
-           $trans->transection_date=$challan->invoice_date;
+           $trans->transection_date=$challan->doc_date;
            $trans->remarks='Freight Charges';
            $trans->debit=$challan->freight_charges ;
            $trans->credit=0;
@@ -566,7 +566,7 @@ if ($today->month >= 7) {
            $trans->account_voucherable_type='App\Models\Sale';
            $trans->account_id=$challan->freight_expense_id;
            //$trans->corporate_id=$item['id'];
-           $trans->transection_date=$challan->invoice_date;
+           $trans->transection_date=$challan->doc_date;
            $trans->remarks='Freight Charges';
            $trans->debit=0;
            $trans->credit=$challan->freight_charges ;
@@ -600,8 +600,8 @@ if ($today->month >= 7) {
            $trans->account_voucherable_type='App\Models\Sale';
            $trans->account_id=$customer_acc;
            //$trans->corporate_id=$item['id'];
-           $trans->transection_date=$challan->invoice_date;
-           $trans->remarks='Ref '.$challan['invoice_no'].':'.$exp['name'];
+           $trans->transection_date=$challan->doc_date;
+           $trans->remarks='Ref '.$challan['doc_no'].':'.$exp['name'];
            $trans->debit=$exp['pivot']['amount'];
            $trans->credit=0;
            $trans->save();
@@ -611,8 +611,8 @@ if ($today->month >= 7) {
            $trans->account_voucherable_type='App\Models\Sale';
            $trans->account_id=775;
            //$trans->corporate_id=$item['id'];
-           $trans->transection_date=$challan->invoice_date;
-           $trans->remarks='Ref '.$challan['invoice_no'].':'.$exp['name'];
+           $trans->transection_date=$challan->doc_date;
+           $trans->remarks='Ref '.$challan['doc_no'].':'.$exp['name'];
            $trans->debit=0;
            $trans->credit=$exp['pivot']['amount'];
            $trans->save();
@@ -791,8 +791,8 @@ if ($today->month >= 7) {
                   
           $old_salesman_id=$challan['salesman_id'];
 
-        $challan->invoice_no=$request->invoice_no;
-        $challan->invoice_date=$request->invoice_date;
+        $challan->doc_no=$request->doc_no;
+        $challan->doc_date=$request->doc_date;
         $challan->due_date=$request->due_date;
         $challan->invoice_type=$request->invoice_type;
         //$challan->type=$request->type;
@@ -934,8 +934,8 @@ if ($today->month >= 7) {
            $trans->account_voucherable_type='App\Models\Sale';
            $trans->account_id=$customer_acc;
            //$trans->corporate_id=$item['id'];
-           $trans->transection_date=$challan->invoice_date;
-           $trans->remarks='Ref '.$challan['invoice_no'].': Gst Amount';
+           $trans->transection_date=$challan->doc_date;
+           $trans->remarks='Ref '.$challan['doc_no'].': Gst Amount';
            $trans->debit=$gst_amount;
            $trans->credit=0;
            $trans->save();
@@ -949,8 +949,8 @@ if ($today->month >= 7) {
            $trans->account_voucherable_type='App\Models\Sale';
            $trans->account_id=776;
            //$trans->corporate_id=$item['id'];
-           $trans->transection_date=$challan->invoice_date;
-           $trans->remarks='Ref '.$challan['invoice_no'].': Gst Amount';
+           $trans->transection_date=$challan->doc_date;
+           $trans->remarks='Ref '.$challan['doc_no'].': Gst Amount';
            $trans->debit=0;
            $trans->credit=$gst_amount;
            $trans->save();
@@ -984,7 +984,7 @@ if ($today->month >= 7) {
            $trans->account_voucherable_type='App\Models\Sale';
            $trans->account_id=$customer_acc;
            //$trans->corporate_id=$item['id'];
-           $trans->transection_date=$challan->invoice_date;
+           $trans->transection_date=$challan->doc_date;
            $trans->remarks=$remarks;
            $trans->debit=$amount;
            $trans->credit=0;
@@ -1002,7 +1002,7 @@ if ($today->month >= 7) {
            $trans->account_voucherable_type='App\Models\Sale';
            $trans->account_id=368;
            //$trans->corporate_id=$item['id'];
-           $trans->transection_date=$challan->invoice_date;
+           $trans->transection_date=$challan->doc_date;
            $trans->remarks=$remarks;
            $trans->debit=0;
            $trans->credit=$amount;
@@ -1026,7 +1026,7 @@ if ($today->month >= 7) {
                      $trans->account_voucherable_type='App\Models\Sale';
                      $trans->account_id=$acc;
                      //$trans->corporate_id=$item['id'];
-                     $trans->transection_date=$challan->invoice_date;
+                     $trans->transection_date=$challan->doc_date;
                      $trans->remarks=$remarks;
                      $trans->debit=0;
                      $trans->credit=$com;
@@ -1044,7 +1044,7 @@ if ($today->month >= 7) {
                      $trans->account_voucherable_type='App\Models\Sale';
                      $trans->account_id=369;
                      //$trans->corporate_id=$item['id'];
-                     $trans->transection_date=$challan->invoice_date;
+                     $trans->transection_date=$challan->doc_date;
                      $trans->remarks=$remarks;
                      $trans->debit=$com;
                      $trans->credit=0;
@@ -1057,7 +1057,7 @@ if ($today->month >= 7) {
             /* $amount=$challan->net_discount();
            if($amount > 0)
            {
-              $remarks="Ref: Discount on Invoice : ".$challan['invoice_no'];
+              $remarks="Ref: Discount on Invoice : ".$challan['doc_no'];
            
 
         // $customer_acc=Customer::find($request->customer_id)->account_id;
@@ -1069,7 +1069,7 @@ if ($today->month >= 7) {
            $trans->account_voucherable_type='App\Models\Sale';
            $trans->account_id=$customer_acc;
            //$trans->corporate_id=$item['id'];
-           $trans->transection_date=$challan->invoice_date;
+           $trans->transection_date=$challan->doc_date;
            $trans->remarks=$remarks;
            $trans->debit=0;
            $trans->credit=$amount;
@@ -1089,7 +1089,7 @@ if ($today->month >= 7) {
            $trans->account_voucherable_type='App\Models\Sale';
            $trans->account_id=$customer_acc;
            //$trans->corporate_id=$item['id'];
-           $trans->transection_date=$challan->invoice_date;
+           $trans->transection_date=$challan->doc_date;
            $trans->remarks='Loading Charges';
            $trans->debit=$challan->loading_charges ;
            $trans->credit=0;
@@ -1106,7 +1106,7 @@ if ($today->month >= 7) {
            $trans->account_voucherable_type='App\Models\Sale';
            $trans->account_id=998;
            //$trans->corporate_id=$item['id'];
-           $trans->transection_date=$challan->invoice_date;
+           $trans->transection_date=$challan->doc_date;
            $trans->remarks='Loading Charges';
            $trans->debit=0;
            $trans->credit=$challan->loading_charges ;
@@ -1127,7 +1127,7 @@ if ($today->month >= 7) {
            $trans->account_voucherable_type='App\Models\Sale';
            $trans->account_id=$customer_acc;
            //$trans->corporate_id=$item['id'];
-           $trans->transection_date=$challan->invoice_date;
+           $trans->transection_date=$challan->doc_date;
            $trans->remarks='Freight Charges';
            $trans->debit=$challan->freight_charges ;
            $trans->credit=0;
@@ -1143,7 +1143,7 @@ if ($today->month >= 7) {
            $trans->account_voucherable_type='App\Models\Sale';
            $trans->account_id=$challan->freight_expense_id;
            //$trans->corporate_id=$item['id'];
-           $trans->transection_date=$challan->invoice_date;
+           $trans->transection_date=$challan->doc_date;
            $trans->remarks='Freight Charges';
            $trans->debit=0;
            $trans->credit=$challan->freight_charges ;
@@ -1201,8 +1201,8 @@ if ($today->month >= 7) {
            $trans->account_voucherable_type='App\Models\Sale';
            $trans->account_id=$customer_acc;
            //$trans->corporate_id=$item['id'];
-           $trans->transection_date=$challan->invoice_date;
-           $trans->remarks='Ref '.$challan['invoice_no'].':'.$exp['name'];
+           $trans->transection_date=$challan->doc_date;
+           $trans->remarks='Ref '.$challan['doc_no'].':'.$exp['name'];
            $trans->debit=$exp['pivot']['amount'];
            $trans->credit=0;
            $trans->save();
@@ -1217,8 +1217,8 @@ if ($today->month >= 7) {
            $trans->account_voucherable_type='App\Models\Sale';
            $trans->account_id=775;
            //$trans->corporate_id=$item['id'];
-           $trans->transection_date=$challan->invoice_date;
-           $trans->remarks='Ref '.$challan['invoice_no'].':'.$exp['name'];
+           $trans->transection_date=$challan->doc_date;
+           $trans->remarks='Ref '.$challan['doc_no'].':'.$exp['name'];
            $trans->debit=0;
            $trans->credit=$exp['pivot']['amount'];
            $trans->save();
@@ -1305,7 +1305,7 @@ if ($today->month >= 7) {
               array_push($expenses, ['expense'=>$key['name'],'amount'=>$key['pivot']['amount'] ]);
             }
 
-            $sale=array( 'id'=>$sale['id'], 'invoice_no'=>$sale['invoice_no'], 'invoice_date'=>$sale['invoice_date'] , 'customer'=>$sale['customer'] ,'remarks'=>$sale['remarks'],  'items'=>$items , 'challan' => $sale['challan'] ,'total_net_qty'=>$total_net_qty , 'total_amount'=>$total_amount ,'gst_amount'=>$gst_amount , 'net_discount'=>$net_discount , 'net_discount_type'=>$net_discount_type , 'net_discount_value'=>$net_discount_value , 'expenses'=>$expenses , 'net_bill'=>$net_bill );*/
+            $sale=array( 'id'=>$sale['id'], 'doc_no'=>$sale['doc_no'], 'doc_date'=>$sale['doc_date'] , 'customer'=>$sale['customer'] ,'remarks'=>$sale['remarks'],  'items'=>$items , 'challan' => $sale['challan'] ,'total_net_qty'=>$total_net_qty , 'total_amount'=>$total_amount ,'gst_amount'=>$gst_amount , 'net_discount'=>$net_discount , 'net_discount_type'=>$net_discount_type , 'net_discount_value'=>$net_discount_value , 'expenses'=>$expenses , 'net_bill'=>$net_bill );*/
 
            
         $data = [
@@ -1322,21 +1322,21 @@ if ($today->month >= 7) {
             view()->share('sale.estimated_invoice',$data);
         $pdf = PDF::loadView('sale.estimated_invoice', $data);
         $pdf->setPaper('A4','portrait');
-        return $pdf->stream($sale['invoice_no'].'.pdf');
+        return $pdf->stream($sale['doc_no'].'.pdf');
       }
         elseif($invoice_type=='tp-invoice')
           {
             view()->share('sale.tp_invoice',$data);
         $pdf = PDF::loadView('sale.tp_invoice', $data);
         $pdf->setPaper('A4','portrait');
-        return $pdf->stream($sale['invoice_no'].'.pdf');
+        return $pdf->stream($sale['doc_no'].'.pdf');
       }
       elseif($invoice_type=='mrp-invoice')
           {
             view()->share('sale.mrp_invoice',$data);
         $pdf = PDF::loadView('sale.mrp_invoice', $data);
         $pdf->setPaper('A4','portrait');
-        return $pdf->stream($sale['invoice_no'].'.pdf');
+        return $pdf->stream($sale['doc_no'].'.pdf');
       }
 
         
@@ -1368,7 +1368,7 @@ if ($today->month >= 7) {
             view()->share('sale.export_invoice_rpt',$data);
         $pdf = PDF::loadView('sale.export_invoice_rpt', $data);
         $pdf->setPaper('A4','portrait');
-        return $pdf->stream($sale['invoice_no'].'.pdf');
+        return $pdf->stream($sale['doc_no'].'.pdf');
       
         
     }
@@ -1396,9 +1396,9 @@ if ($today->month >= 7) {
                if($customer_id!='')   
                 $q->where('customer_id',$customer_id);
                 if($from!='')   
-                $q->where('invoice_date','>=',$from);
+                $q->where('doc_date','>=',$from);
                 if($to!='')   
-                $q->where('invoice_date','<=',$to);
+                $q->where('doc_date','<=',$to);
             })->whereHas('sale.customer', function ($q) use ($so_id){
                   
                if($so_id!='')   
@@ -1450,9 +1450,9 @@ if ($today->month >= 7) {
                if($customer_id!='')   
                 $q->where('customer_id',$customer_id);
                 if($from!='')   
-                $q->where('invoice_date','>=',$from);
+                $q->where('doc_date','>=',$from);
                 if($to!='')   
-                $q->where('invoice_date','<=',$to);
+                $q->where('doc_date','<=',$to);
             })->whereHas('sale.customer', function ($q) use ($so_id){
                   
                if($so_id!='')   

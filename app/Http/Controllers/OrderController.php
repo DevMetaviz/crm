@@ -421,7 +421,7 @@ if ($today->month >= 7) {
      */
     public function show(Order $order)
     {
-        //
+        return view('sale.show_order', compact('order'));
     }
 
     /**

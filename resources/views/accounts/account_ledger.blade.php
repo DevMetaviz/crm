@@ -1,6 +1,6 @@
 
 @extends('layout.master')
-@section('title', 'Account Ledger')
+@section('title', 'General Ledger')
 @section('header-css')
 <link href="{{asset('public/own/inputpicker/jquery.inputpicker.css')}}" rel="stylesheet" type="text/css">
   
@@ -11,7 +11,7 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 style="display: inline;">Account Ledger</h1>
+            <h1 style="display: inline;">General Ledger</h1>
 
             <?php
                  $account_id=''; $detail=''; $from=''; $to='';
@@ -65,7 +65,7 @@
 
          <div class="card">
               <div class="card-header">
-                <h3 class="card-title">Account Ledger</h3>
+                <h3 class="card-title">General Ledger</h3>
                  
                 <!-- <a href="{{url('employee/attendance/register-search')}}" class="float-sm-right">Employee Wise Attendance</a> -->
                <div class="card-tools">
@@ -81,15 +81,71 @@
               <div class="card-body">
                  
                     <form role="form" id="item_history_form" method="get" action="{{url('account/ledger/')}}">
-                   <fieldset class="border p-4">
-                   <legend class="w-auto">Criteria</legend>
+                       <input type="hidden" name="detail" value="1" >
+
+                  
+                   <legend class="w-auto">General Ledger Filter</legend>
 
                        <div id="item_error" style="display: none;"><p class="text-danger" id="item_error_txt"></p></div>
 
                         <div class="row">
 
+
+          <div class="col-md-4 form-group ">
+             <label>Company</label>
+           <select name="company_id" class="form-control" >
+           
+              <option value="">All</option>
+
+              @foreach($companies as $comp)
+              <option value="{{ $comp->id }}" @if(request('company_id')==$comp['id']) selected @endif >{{ $comp->name }}</option>  
+              @endforeach
+            </select>
+        </div>
+
+
+        <?php
+
+                $branches=[];
+
+                if(request('company_id')>0)
+                {
+                  $index = $companies->search(fn($item) => $item->id == 1);
+                   $branches=$companies[$index]['branches'];
+                }
+
+
+         ?>
+
+        <div class="col-md-4 form-group">
+             <label>Branch</label>
+           <select name="branch_id" class="form-control" >
+           
+              <option value="">All</option>
+              
+              @foreach($branches as $comp)
+              <option value="{{ $comp->id }}" @if(request('branch_id')==$comp['id']) selected @endif >{{ $comp->name }}</option>  
+              @endforeach
+                  
+              
+            </select>
+        </div>
+
+
+        <div class="col-md-4">
+             <label>Status</label>
+           <select name="status" class="form-control" >
+           
+                <option value=""  >All</option>
+              <option value="0" @if(request('status')==0 && request('status')!='' ) selected @endif >Unpost</option>  
+              <option value="1" @if(request('status')==1) selected @endif >Post</option>
+                
+              
+            </select>
+        </div>
+
                     
-           <div class="col-md-6">
+           <div class="col-md-4 form-group">
            <div class="dropdown" id="accounts_table_account_dropdown">
                 <label>Account</label>
               <input class="form-control"  name="account_id" id="account_id" required>
@@ -100,46 +156,46 @@
            <div class="col-md-2">
                     <div class="form-group">
                   <label>From</label>
-                  <input type="date" class="form-control select2"  name="from" id="from" value="@if(isset($config['from'])){{$config['from']}}@endif" >
+                  <input type="date" class="form-control"  name="from" id="from" value="@if(isset($config['from'])){{$config['from']}}@endif" >
                 </div>
               </div>
 
               <div class="col-md-2">
                     <div class="form-group">
                   <label>To</label>
-                  <input type="date" class="form-control select2"  name="to" id="to"  value="@if(isset($config['to'])){{$config['to']}}@endif" >
+                  <input type="date" class="form-control "  name="to" id="to"  value="@if(isset($config['to'])){{$config['to']}}@endif" >
                 </div>
               </div>
               
 
 
-              <div class="col-md-1">
+              <!----<div class="col-md-1">
                       <br>
                     <div class="custom-control custom-checkbox">
                           <input class="custom-control-input custom-control-input-info custom-control-input-outline" type="checkbox" name="detail" id="detail" value="1" >
                           <label for="detail" class="custom-control-label">Detail</label>
                         </div>
 
-              </div>
+              </div>-->
 
               
 
-                    <div class="col-md-1">
-                      <br>
-                    <input type="submit" class="btn btn-info" name="" value="View">
+                    <div class="col-md-12 text-right">
+                    <input type="submit" class="btn btn-info" name="" value="Search">
                      </div>
 
 
                     </div>
 
-                 </fieldset>
+                 
                  </form>
                  <div></div>
                   @if(isset($ledger))
-                  <div style="float: right;"><b>Opening: {{number_format($ledger['opening'], 2)}}</b></div>
+
+                  <div class="mt-2 mb-2" style="float: right;"><b>Opening: {{number_format($ledger['opening'], 2)}}</b></div>
                   
                   <div class="table-responsive p-0" style="height: 400px;">
-                <table class="table table-bordered table-hover table-head-fixed text-nowrap" id="" style="">
+                <table class="table table-bordered table-hover table-head-fixed text-nowrap-1" id="" style="">
                     
                  
                  </thead>
@@ -219,6 +275,7 @@
                   <tfoot>
                      
                      <tr>
+                       <th></th>
                        <th></th>
                        <th></th>
                        <th></th>

@@ -825,7 +825,7 @@ public function getQtyWithRack()
 
              $challans=$this->outgoing_stock_list()->whereHas('challan', function($q) use($to,$batch_no){
                 if($to!='')
-                  { $q->where('challan_date', '<=', $to); }
+                  { $q->where('doc_date', '<=', $to); }
                 if($batch_no!='')
                 $q->where('batch_no',$batch_no);
                     $q->where('status','1');
@@ -1005,9 +1005,9 @@ public function getQtyWithRack()
 
           $challans=$this->outgoing_stock_list()->whereHas('challan', function($q) use($from,$to){
              if($from!='')
-                  { $q->where('challan_date', '>=', $from); }
+                  { $q->where('doc_date', '>=', $from); }
                 if($to!='')
-                  { $q->where('challan_date', '<=', $to); }
+                  { $q->where('doc_date', '<=', $to); }
                     $q->where('status','1');
                 })->get();
 
@@ -1156,7 +1156,7 @@ public function getQtyWithRack()
 
                 $record['doc_no']=$grn['challan']['doc_no'];
                 $record['out_qty']=$grn['qty']; //*$grn['pack_size'];
-                $record['doc_date']=$grn['challan']['challan_date'];
+                $record['doc_date']=$grn['challan']['doc_date'];
                  $record['batch_no']=$grn['batch_no'];
 
                  if($grn['challan']['customer_id']!='')
@@ -1425,9 +1425,9 @@ public function getQtyWithRack()
 
              $challans=$this->outgoing_stock_list()->whereHas('challan', function($q) use($from,$to,$batch_no){
                 if($to!='')
-                  { $q->where('challan_date', '<=', $to); }
+                  { $q->where('doc_date', '<=', $to); }
                 if($from!='')
-                $q->where('challan_date','>=',$from);
+                $q->where('doc_date','>=',$from);
               if($batch_no!='')
                 $q->where('batch_no',$batch_no);
                     $q->where('status','1');

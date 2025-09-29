@@ -375,49 +375,49 @@ class Sale extends Model
         }
 
         $todaySales = (clone $query)
-        ->whereDate('invoice_date', now()->toDateString())
+        ->whereDate('doc_date', now()->toDateString())
         ->sum('total_amount');
 
     $todaySalesWeight = (clone $query)
-    ->whereDate('invoice_date', now()->toDateString())
+    ->whereDate('doc_date', now()->toDateString())
     ->sum('total_weight');
 
 
     
 
  $yesterdaySales = (clone $query)
-    ->whereDate('invoice_date', now()->subDay()->toDateString())
+    ->whereDate('doc_date', now()->subDay()->toDateString())
     ->sum('total_amount');
 
     $yesterdaySalesWeight = (clone $query)
-    ->whereDate('invoice_date', now()->subDay()->toDateString())
+    ->whereDate('doc_date', now()->subDay()->toDateString())
     ->sum('total_weight');
 
 
    /* $currentMonthSales = DB::table('sales')
     ->join('item_sale', 'sales.id', '=', 'item_sale.invoice_id')
-    ->whereYear('sales.invoice_date', now()->year)
-    ->whereMonth('sales.invoice_date', now()->month)
+    ->whereYear('sales.doc_date', now()->year)
+    ->whereMonth('sales.doc_date', now()->month)
     ->sum(DB::raw('item_sale.qty * IFNULL(item_sale.pack_size,1) * item_sale.rate'));*/
 
      $currentMonthSales = (clone $query)
-    ->whereYear('invoice_date', now()->year)
-    ->whereMonth('invoice_date', now()->month)
+    ->whereYear('doc_date', now()->year)
+    ->whereMonth('doc_date', now()->month)
     ->sum('total_amount');
 
     $currentMonthSalesWeight = (clone $query)
-    ->whereYear('invoice_date', now()->year)
-    ->whereMonth('invoice_date', now()->month)
+    ->whereYear('doc_date', now()->year)
+    ->whereMonth('doc_date', now()->month)
     ->sum('total_weight');
 
 
 
     $currentYearSales = (clone $query)
-    ->whereYear('invoice_date', now()->year)
+    ->whereYear('doc_date', now()->year)
     ->sum('total_amount');
 
     $currentYearSalesWeight = (clone $query)
-    ->whereYear('invoice_date', now()->year)
+    ->whereYear('doc_date', now()->year)
     ->sum('total_weight');
 
 
@@ -447,11 +447,11 @@ $end   = now()->subDay()->endOfDay();
 
 $sales = DB::table('sales')
     ->selectRaw('
-        DATE(invoice_date) as date,
-        DAYNAME(invoice_date) as day_name,
+        DATE(doc_date) as date,
+        DAYNAME(doc_date) as day_name,
         SUM(total_amount) as total
     ')
-    ->whereBetween('invoice_date', [$start, $end])
+    ->whereBetween('doc_date', [$start, $end])
     ->groupBy('date','day_name')
     ->orderBy('date')
     ->get()
@@ -478,7 +478,7 @@ $sales = DB::table('sales')
 {
     $range = $params['range'] ?? 'weekly';
     $sales = DB::table('sales')
-        ->select(DB::raw('DATE(invoice_date) as date'), DB::raw('SUM(total_amount) as total'))
+        ->select(DB::raw('DATE(doc_date) as date'), DB::raw('SUM(total_amount) as total'))
         ->groupBy('date')
         ->pluck('total','date');
 
@@ -505,8 +505,8 @@ $sales = DB::table('sales')
             $monthName = now()->subMonths(12-$m)->format('M');
             $yearMonth = now()->subMonths(12-$m)->format('Y-m');
             $total = DB::table('sales')
-                ->whereYear('invoice_date', substr($yearMonth,0,4))
-                ->whereMonth('invoice_date', substr($yearMonth,5,2))
+                ->whereYear('doc_date', substr($yearMonth,0,4))
+                ->whereMonth('doc_date', substr($yearMonth,5,2))
                 ->sum('total_amount');
             return ['month_name' => $monthName, 'total' => $total];
         });
@@ -516,7 +516,7 @@ $sales = DB::table('sales')
         return collect(range(0,7))->map(function($i){
             $year = now()->subYears($i)->year;
             $total = DB::table('sales')
-                ->whereYear('invoice_date', $year)
+                ->whereYear('doc_date', $year)
                 ->sum('total_amount');
             return ['year' => $year, 'total' => $total];
         })->reverse();

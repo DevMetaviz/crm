@@ -168,7 +168,7 @@
        {{-- <tr class="">
             <td align="" style="width: 34%;">
                <table class="challan-detail">
-                <tr><th>DC NO:</th><td>{{$return['doc_no']}}</td></tr>
+                <tr><th>Return NO:</th><td>{{$return['doc_no']}}</td></tr>
                 <tr><th>Return Date:</th><td>{{$return['doc_date']}}</td></tr>
                  <tr><th>Customer:</th><td>{{$return['customer']['name']}}</td></tr>
                  <tr><th>Mobile:</th><td>{{$return['customer']['mobile']}}</td></tr>
@@ -195,9 +195,9 @@
     <p><b>Return Date: </b>{{$return['doc_date']}}</p>
 
 @if($return['sale'])
-    <p><b>Invoice No:</b>&nbsp;&nbsp;&nbsp;{{$return['sale']['invoice_no']}}</p>
+    <p><b>Invoice No:</b>&nbsp;&nbsp;&nbsp;{{$return['sale']['doc_no']}}</p>
 
-    <p><b>Invoice Date: </b>{{$return['sale']['invoice_date']}}</p>
+    <p><b>Invoice Date: </b>{{$return['sale']['doc_date']}}</p>
   @endif
     <p class="name"><b>Customer: </b>{{$return['customer']['account']['code'].' '.$return['customer']['name']}}</p>
    

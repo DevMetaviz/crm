@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\VoucherController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,7 +14,7 @@ use App\Http\Controllers\VoucherController;
 */
 
 /*Route::get('/', function () {
-return view('welcome');
+    return view('welcome');
 });*/
 Route::get('/', 'UserController@login');
 
@@ -26,7 +25,7 @@ Route::post('login', 'UserController@authenticate')->name('login');
 
 Route::middleware(['auth'])->group(function (){
 
-Route::get('dashboard', 'UserController@dashboard')->withoutMiddleware('CheckRole');
+	Route::get('dashboard', 'UserController@dashboard')->withoutMiddleware('CheckRole');
 
 
 Route::get('/sales/chart-data', 'UserController@salesChartData')->name('sales.chart-data');
@@ -488,6 +487,7 @@ Route::get('/order/history', 'OrderController@index');
 Route::get('/orders/pending', 'OrderController@pending');
 Route::get('/orders/pending-approval', 'OrderController@pending_approval_orders');
 Route::post('/orders/update-status/{id}', 'OrderController@updateStatus')->name('orders.updateStatus');
+Route::get('/order/{order}', 'OrderController@show');
 Route::get('/edit/order/{order}', 'OrderController@edit');
 Route::post('/order/update', 'OrderController@update');
 Route::get('get/customer/new/orders','OrderController@getCustomerNewOrders');
@@ -628,14 +628,17 @@ Route::post('voucher/type/update', 'VoucherController@voucher_type_update');
 Route::get('voucher/{type}/list', 'VoucherController@index_new');
 Route::get('voucher/{type}/create', 'VoucherController@create_new');
 Route::get('voucher/{type}/{voucher}/edit', 'VoucherController@create_new');
-Route::post('voucher_new/save', 'VoucherController@store_new');
-
-Route::post('voucher_new/store', 'VoucherController@store_new')->name('voucher.store');
+Route::post('voucher_new/save', 'VoucherController@store_new')->name('voucher.store_new');
 Route::post('voucher_new/update/{id}', 'VoucherController@update_new')->name('voucher.update_new');
-
-
 Route::get('voucher/{type}/{voucher}/view', 'VoucherController@show_new');
 Route::post('delete_new/voucher/{voucher}', 'VoucherController@destroy_new');
+Route::delete('/voucher/file/delete/{id}', 'VoucherController@deleteFile')->name('voucher.file.delete');
+
+
+
+
+
+
 
 
 Route::get('get/voucher/no', 'VoucherController@get_voucher_no');
@@ -710,8 +713,8 @@ Route::post('update/configuration/product/procedure','ProductionController@updat
 
 
 Route::prefix('account')->group(function () {
-Route::resource('cheques', ChequeController::class);
-Route::resource('rates', RateController::class);
+    Route::resource('cheques', ChequeController::class);
+    Route::resource('rates', RateController::class);
 });
 
 
@@ -883,15 +886,10 @@ Route::get('print/blistering/{blistering}' , 'BlisteringController@print');
 
 Route::get('capsule-filling' , 'FillingController@create');
 
+
 Route::get('/test1', 'ProductionController@index');
 Route::get('/down', 'EmployeeController@test');
 Route::get('/test2', 'SaleController@setRate');
-
-
-
-
-Route::delete('/voucher/file/delete/{id}', [VoucherController::class, 'deleteFile'])->name('voucher.file.delete');
-
 
 
 
@@ -899,8 +897,8 @@ Route::delete('/voucher/file/delete/{id}', [VoucherController::class, 'deleteFil
 
 
 Route::get('/clear-cache', function() {
-Artisan::call('cache:clear');
-return "Cache is cleared";
+    Artisan::call('cache:clear');
+    return "Cache is cleared";
 });
 
 //net discount and tax in double in purchase and purchase_item
@@ -918,7 +916,7 @@ return "Cache is cleared";
 
 //salry , salry allowance tabel add
 
-
+ 
 
 //std_id, super_id in std_table_rows
 
@@ -965,6 +963,3 @@ return "Cache is cleared";
 //-----
 //production demand
 //pack_size_qty in inventory
-
-
-

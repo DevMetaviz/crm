@@ -216,14 +216,14 @@ class sale_stock extends Model
 
    
     if (!empty($params['year'])) {
-        $query->whereYear('sales.invoice_date', $params['year']);
+        $query->whereYear('sales.doc_date', $params['year']);
     }
 
     
     if (!empty($params['month'])) {
         $year = $params['year'] ?? now()->year;
-        $query->whereYear('sales.invoice_date', $year)
-              ->whereMonth('sales.invoice_date', $params['month']);
+        $query->whereYear('sales.doc_date', $year)
+              ->whereMonth('sales.doc_date', $params['month']);
     }
 
     return $query->limit($limit)->get();

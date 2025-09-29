@@ -88,7 +88,7 @@
                      
                      <td>{{$i}}</td>
                      <td><a href="{{url('edit/delivery-challan/'.$challan['id'])}}">{{$challan['doc_no']}}</a></td>
-                     <td>{{$challan['challan_date']}}</td>
+                     <td>{{$challan['doc_date']}}</td>
                      <td>@if(isset($challan['order'])){{$challan['order']['doc_no']}}@endif</td>
                      <td>@if(isset($challan['order'])){{$challan['order']['order_date']}}@endif</td>
                     <td>{{$challan['customer']['name']}}</td>
