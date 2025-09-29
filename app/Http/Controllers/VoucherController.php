@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Voucher;
+use App\Models\VoucherFile;
 use Illuminate\Http\Request;
 use App\Models\Configuration;
 use App\Models\Account;
@@ -448,24 +449,6 @@ public function update_new(Request $request, $id)
             ]);
         }
     }
-    /*
-    // handle proofs (store as binary in DB)
-    // handle proofs (binary file uploads)
-    if ($request->hasFile('proofs')) {
-        foreach ($request->file('proofs') as $file) {
-            // create a unique filename
-            $filename = time() . '_' . $file->getClientOriginalName();
-
-            // move to public/proofs folder
-            $file->move(public_path('proofs'), $filename);
-
-            // store only the file path in DB
-            $voucher->files()->create([
-                'path' => 'proofs/' . $filename,
-            ]);
-        }
-    }
-    */
 
 
     $msg = ucfirst($category) . ' updated successfully.';
@@ -475,15 +458,25 @@ public function update_new(Request $request, $id)
 
 public function deleteFile($id)
 {
-    $file = Voucher::find($id); // Make sure File model is used
+    $file = VoucherFile::find($id);
     
+    //dd($file);
     if (!$file) {
         return response()->json(['success' => false, 'message' => 'File not found'], 404);
     }
 
-    $filePath = public_path($file->path); // proofs/filename.png
-    if (FileFacade::exists($filePath)) {
-        FileFacade::delete($filePath);
+    // Remove domain from path if stored as full URL
+    $filePath = $file->path;
+    if (strpos($filePath, 'http') === 0) {
+        // Get relative path after /public/
+        $filePath = parse_url($filePath, PHP_URL_PATH);
+        $filePath = str_replace('/crm/public/', '', $filePath); // Adjust your folder structure
+    }
+
+    $fullPath = public_path($filePath);
+
+    if (FileFacade::exists($fullPath)) {
+        FileFacade::delete($fullPath);
     }
 
     $file->delete();
