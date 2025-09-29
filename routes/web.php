@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\VoucherController;
 
 /*
 |--------------------------------------------------------------------------
@@ -628,7 +629,11 @@ Route::get('voucher/{type}/list', 'VoucherController@index_new');
 Route::get('voucher/{type}/create', 'VoucherController@create_new');
 Route::get('voucher/{type}/{voucher}/edit', 'VoucherController@create_new');
 Route::post('voucher_new/save', 'VoucherController@store_new');
-Route::post('voucher_new/update/{id}', 'VoucherController@update_new');
+
+Route::post('voucher_new/store', 'VoucherController@store_new')->name('voucher.store');
+Route::post('voucher_new/update/{id}', 'VoucherController@update_new')->name('voucher.update_new');
+
+
 Route::get('voucher/{type}/{voucher}/view', 'VoucherController@show_new');
 Route::post('delete_new/voucher/{voucher}', 'VoucherController@destroy_new');
 
@@ -884,6 +889,12 @@ Route::get('/test2', 'SaleController@setRate');
 
 
 
+
+Route::delete('/voucher/file/delete/{id}', [VoucherController::class, 'deleteFile'])->name('voucher.file.delete');
+
+
+
+
 } ); //end route group
 
 
@@ -954,3 +965,6 @@ return "Cache is cleared";
 //-----
 //production demand
 //pack_size_qty in inventory
+
+
+

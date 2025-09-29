@@ -12,6 +12,8 @@ use App\Models\Branch;
 use Illuminate\Support\Facades\Auth;
 use PDF;
 
+use Illuminate\Support\Facades\File as FileFacade;
+
 class VoucherController extends Controller
 {
     /**
@@ -302,6 +304,7 @@ die;
 
 public function update_new(Request $request, $id)
 {
+    //dd($_FILES);
     $voucher = Voucher::findOrFail($id);
 
     // validate
@@ -445,11 +448,49 @@ public function update_new(Request $request, $id)
             ]);
         }
     }
+    /*
+    // handle proofs (store as binary in DB)
+    // handle proofs (binary file uploads)
+    if ($request->hasFile('proofs')) {
+        foreach ($request->file('proofs') as $file) {
+            // create a unique filename
+            $filename = time() . '_' . $file->getClientOriginalName();
+
+            // move to public/proofs folder
+            $file->move(public_path('proofs'), $filename);
+
+            // store only the file path in DB
+            $voucher->files()->create([
+                'path' => 'proofs/' . $filename,
+            ]);
+        }
+    }
+    */
+
 
     $msg = ucfirst($category) . ' updated successfully.';
 
     return redirect()->back()->with(['success' => $msg, 'voucher_id' => $voucher->id]);
 }
+
+public function deleteFile($id)
+{
+    $file = Voucher::find($id); // Make sure File model is used
+    
+    if (!$file) {
+        return response()->json(['success' => false, 'message' => 'File not found'], 404);
+    }
+
+    $filePath = public_path($file->path); // proofs/filename.png
+    if (FileFacade::exists($filePath)) {
+        FileFacade::delete($filePath);
+    }
+
+    $file->delete();
+
+    return response()->json(['success' => true, 'message' => 'File deleted successfully']);
+}
+
 
   public function destroy_new(Voucher $voucher)
     {
@@ -593,6 +634,8 @@ public function update_new(Request $request, $id)
      */
     public function store(Request $request)
     {
+
+
         $chln=Voucher::where('voucher_no',$request->voucher_no)->first();
             if($chln!='')
              return redirect()->back()->with('error','Voucher no. already existed!');
@@ -1543,6 +1586,7 @@ public function update_new(Request $request, $id)
          return redirect()->back()->with('success','Expense updated!');
          
     }
+
 
     //end expense funtions
 }
