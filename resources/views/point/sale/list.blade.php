@@ -1,0 +1,151 @@
+
+@extends('layout.master')
+@section('title', 'Point Sale List')
+@section('header-css')
+
+  
+@endsection
+@section('content-header')
+    <!-- Content Header (Page header) -->
+
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 style="display: inline;">Point Sale List</h1>
+            <a class="btn" href="{{url('point/sale/create')}}" style="border: none;background-color: transparent;"><span class="fas fa-edit">&nbsp</span>New</a>
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item"><a href="#">Point Sale</a></li>
+              <li class="breadcrumb-item active">List</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+  @endsection
+
+@section('content')
+    <!-- Main content -->
+
+    
+      <div class="container-fluid" style="margin-top: 10px;">
+
+          
+
+         <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">List</h3>
+              
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+
+                @if(session()->has('success'))
+    <div class="alert alert-success alert-dismissible col-md-3">
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+        {{ session()->get('success') }}
+    </div>
+             @endif
+
+               
+
+                
+
+              
+                <table id="example1" class="table table-bordered table-hover mt-4" style="">
+                  
+                  <thead>
+                  
+
+
+
+                  </thead>
+                  <tbody>
+                  
+                 <tr>
+                    <th>Id</th>
+                    <th>Doc No</th>
+                    <th>Doc Date</th>
+                    <th>Invoice No</th>
+                    <th>Point</th>
+                    <th>Distributor</th>
+                    
+                    <th>Total Qty</th>
+                    <th>Amount</th>
+                  
+                    <th>Active</th>
+                    <th></th>
+                  </tr>
+
+                  
+            
+                    @foreach($sales as $sale)
+                      
+                        <tr>
+                   
+                     
+                     <td>{{$sale['id']}}</td>
+                     <td>{{$sale['doc_no']}}</td>
+                     <td>{{$sale['doc_date']}}</td>
+                     <td>{{$sale['invoice_no']}}</td>
+                     <td>@if(isset($sale['point'])){{$sale['point']['name']}}@endif</td>
+                     <td>@if(isset($sale['distributor'])){{$sale['distributor']['name']}}@endif</td>
+                     <?php $qty=$sale->total_quantity(); $total=$sale->total_amount(); ?>
+                     <td>{{$qty}}</td>
+                    <td>{{$total}}</td>
+                    
+                     <?php $active='Active';
+                            if($sale['activeness']=='0')
+                             $active='Inactive';
+                             ?>
+                     <td>{{$active}}</td>
+                    
+                     <td><a href="{{url('edit/point/sale/'.$sale['id'])}}"><span class="fa fa-edit"></span></a></td>
+                   
+                    
+                 
+                   
+                  </tr>
+
+                    @endforeach
+                
+                  
+                  </tbody>
+                  <tfoot>
+                  <tr>
+                  
+                  </tr>
+                  </tfoot>
+                </table>
+
+
+              
+                  
+                  
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+                   
+
+
+
+        
+      </div>
+
+    <!-- /.content -->
+   
+@endsection
+
+@section('jquery-code')
+
+
+
+
+
+
+
+@endsection  
+  

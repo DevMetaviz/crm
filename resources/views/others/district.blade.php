@@ -1,0 +1,322 @@
+
+@extends('layout.master')
+@section('title', 'District Configuration')
+@section('header-css')
+
+  
+@endsection
+@section('content-header')
+    <!-- Content Header (Page header) -->
+
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 style="display: inline;">District Configuration</h1>
+            
+          </div>
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item"><a href="#">Configuration</a></li>
+             
+              <li class="breadcrumb-item active">District</li>
+            </ol>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+  @endsection
+
+@section('content')
+    <!-- Main content -->
+
+    
+      <div class="container-fluid" style="margin-top: 10px;">
+
+          
+
+         <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Districts</h3>
+              
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+
+              <div class="row">
+                   
+
+                   <div class="col-md-6">
+                @if(session()->has('success'))
+    <div class="alert alert-success alert-dismissible">
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+        {{ session()->get('success') }}
+    </div>
+             @endif
+
+           </div>
+         </div>
+
+                <div class="row">
+                   
+
+                   <div class="col-md-12">
+                        
+                        <fieldset class="border p-4">
+                   <legend class="w-auto">Add New District</legend>
+
+                    <form role="form" method="post" action="{{url('/configuration/district/save')}}">
+
+                  <input type="hidden" value="{{csrf_token()}}" name="_token"/>
+
+                <label>Country</label>
+                
+                <select  name="country" id="country" onchange="get_States_Regions()" required="true" style="">
+                    <option value="">------Select any value-----</option>
+                    @foreach($countries as $country)
+                    <option value="{{$country['id']}}">{{$country['name']}}</option>
+                    @endforeach
+                  
+                  </select>
+
+                  <label>Province</label>
+                
+                <select  name="province" id="province" onchange="getStatesRegions()" style="">
+                    <option value="">------Select any province-----</option>
+                    
+                  
+                  </select>
+
+                  <label>Region</label>
+                
+                <select  name="region" id="region" onchange="getDitricts()" style="">
+                    <option value="">------Select any region-----</option>
+                    
+                  
+                  </select>
+
+                <label>District</label>
+                <input type="text" name="district" class="" required="true" />
+
+                <label>Description</label>
+                <textarea name="description" class=""></textarea>
+               
+               <label>Sort Order</label>
+                <input type="number" name="sort_order" class="" min="1" value="1" required="true" />
+
+                  <input type="checkbox" name="activeness" value="1" id="activeness" class=""  checked>
+                  <label>Active</label>
+
+                
+
+                <input type="submit" name="" value="Add">
+                       </fieldset>
+
+                  </form>
+                     
+                   </div>
+
+                </div>
+
+                
+
+              
+                <table id="example1" class="table table-bordered table-hover mt-4" style="">
+                  
+                  <thead>
+                  
+                       <tr>
+                    <th>Id</th>
+                    <th>District</th>
+                    <th>Region</th>
+                    <th>State</th>
+                    <th>Country</th>
+                    <th>Description</th>
+                     <th>Sort Order</th>
+                    <th>Status</th>
+                  </tr>
+
+
+                  </thead>
+                  <tbody id="district_body">
+                  
+                 
+
+            
+          
+                  
+                
+                  
+                  </tbody>
+                  <tfoot>
+                  <tr>
+                  
+                  </tr>
+                  </tfoot>
+                </table>
+
+
+              
+                  
+                  
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+                   
+
+
+
+        
+      </div>
+
+    <!-- /.content -->
+   
+@endsection
+
+@section('jquery-code')
+<script type="text/javascript">
+  
+  function get_States_Regions() {
+    //add country states
+    $('#province').html('');
+    $('#region').html('');
+            $.ajax({
+               type:'get',
+               url:'{{ url("/get/states") }}',
+               data:{
+                    
+                    country: jQuery('#country').val(),
+
+               },
+               success:function(data) {
+
+                text='<option value="">------Select any province-----</option>';
+                  for(i=0;i<data.length;i++)
+                  {
+
+                    text+=`
+                    
+          <option value="${data[i]['id']}">${data[i]['name']}</option>
+           `; 
+
+                  }
+
+                  $('#province').html(text); 
+                
+               }
+            });
+// add country regions
+            $.ajax({
+               type:'get',
+               url:'{{ url("/get/country-regions") }}',
+               data:{
+                    
+                    country: jQuery('#country').val(),
+
+               },
+               success:function(data) {
+
+                 text='<option value="">------Select any region-----</option>';
+                  for(i=0;i<data.length;i++)
+                  {
+
+                    text+=`
+                    
+          <option value="${data[i]['id']}">${data[i]['name']}</option>
+           `; 
+
+                  }
+
+                  $('#region').html(text); 
+               
+                
+               }
+            });
+
+            // add country dist
+
+            getDitricts();
+
+         } //end get_States_Regions
+
+
+         function getStatesRegions() {  //on change of province
+           $('#region').html('');
+            $.ajax({
+               type:'get',
+               url:'{{ url("/get/state/regions") }}',
+               data:{
+                    
+                    country: jQuery('#country').val(),
+                    province: jQuery('#province').val(),
+
+               },
+               success:function(data) {
+
+                text='<option value="">------Select any regions-----</option>';
+                  for(i=0;i<data.length;i++)
+                  {
+
+                    text+=`
+                    
+          <option value="${data[i]['id']}">${data[i]['name']}</option>
+           `; 
+
+                  }
+
+                  $('#region').html(text); 
+                
+               }
+            });
+
+            getDitricts();
+         }// end getStatesRegions
+
+         function getDitricts() {
+           //alert( $('#country').val()+' '+ $('#province').val()+' '+ $('#region').val() );
+         
+            $.ajax({
+               type:'get',
+               url:'{{ url("/get/districts") }}',
+               data:{
+                    
+                    province: $('#province').val(),
+                    country: $('#country').val(),
+                    region: $('#region').val(),
+
+               },
+               success:function(data) {
+
+                text=''; 
+                  for(i=0;i<data.length;i++)
+                  {
+
+                    region=''; province='';
+                if(data[i]['region']!=null)
+                  region=data[i]['region']['name'];
+                if(data[i]['province']!=null)
+                  province=data[i]['province']['name'];
+
+                    text+=`<tr> 
+          <td>${data[i]['id']}</td> 
+          <td>${data[i]['name']}</td> 
+          <td>${region}</td> 
+          <td>${province}</td> 
+          <td>${data[i]['country']['name']}</td>
+          <td>${data[i]['description']}</td> 
+          <td>${data[i]['sort_order']}</td> 
+          <td>${data[i]['activeness']}</td>  
+           </tr>`; 
+
+                  }
+
+                  $('#district_body').html(text); 
+                
+               }
+            });
+         }
+
+</script>
+@endsection  
+  
