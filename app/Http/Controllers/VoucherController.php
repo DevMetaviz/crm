@@ -187,13 +187,13 @@ die;
         //'accounts.*.amount' => 'required|numeric|min:1',
         'proofs.*' => 'image|mimes:jpg,jpeg,png|max:2048'
     ], [
-    'voucher_no.required'   => 'Voucher number is required.',
-    'voucher_no.unique'     => 'This voucher number is already in use.',
-    'category.in'           => 'Category must be either payment, receipt, or expense.',
-    'proofs.*.image'        => 'Each proof file must be an image.',
-    'proofs.*.mimes'        => 'Proofs must be jpg, jpeg, or png.',
-    'proofs.*.max'          => 'Proofs must not exceed 2MB.',
-]
+        'voucher_no.required'   => 'Voucher number is required.',
+        'voucher_no.unique'     => 'This voucher number is already in use.',
+        'category.in'           => 'Category must be either payment, receipt, or expense.',
+        'proofs.*.image'        => 'Each proof file must be an image.',
+        'proofs.*.mimes'        => 'Proofs must be jpg, jpeg, or png.',
+        'proofs.*.max'          => 'Proofs must not exceed 2MB.',
+    ]
 ); 
 
 
@@ -444,23 +444,34 @@ public function update_new(Request $request, $id)
             $filename = time() . '_' . $file->getClientOriginalName();
             $file->move(public_path('proofs'), $filename);
 
-            $voucher->files()->create([
+            $fileRecord = $voucher->files()->create([
                 'path' => 'proofs/' . $filename
             ]);
+
+            $uploadedFiles[] = [
+                'id' => $fileRecord->id,
+                'path' => $fileRecord->path
+            ];
         }
+
+        return response()->json([
+            'success' => true,
+            'files' => $uploadedFiles
+        ]);
+
     }
 
 
     $msg = ucfirst($category) . ' updated successfully.';
+    return redirect()->back()->with(['success' => $msg, 'voucher_id' => $voucher->id, 'files' => $uploadedFiles]);
+    // return redirect()->back()->with(['success' => $msg, 'voucher_id' => $voucher->id, 'files' => $uploadedFiles]);
 
-    return redirect()->back()->with(['success' => $msg, 'voucher_id' => $voucher->id]);
 }
 
 public function deleteFile($id)
 {
     $file = VoucherFile::find($id);
-    
-    //dd($file);
+
     if (!$file) {
         return response()->json(['success' => false, 'message' => 'File not found'], 404);
     }

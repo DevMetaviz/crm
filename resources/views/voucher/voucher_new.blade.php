@@ -565,7 +565,7 @@
         });
 
         // AJAX request
-        $.ajax({
+        /*$.ajax({
             url: $(form).attr('action'),
             type: 'POST',
             data: formData,
@@ -581,7 +581,48 @@
                 console.error(err.responseText || err);
                 alert('Error submitting the form.');
             }
+        });*/
+
+        $.ajax({
+            url: $(form).attr('action'),
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(res) {
+                alert('Form submitted successfully!');
+
+                // Clear previous selected files & previews
+                selectedFiles = [];
+                renderPreview(); 
+                form.reset(); 
+
+                // Add new uploaded files to the existing div
+                if(res.files && res.files.length > 0){
+                    res.files.forEach(function(file){
+                        let html = `
+                        <div class="col-md-3 mb-2" id="file-${file.id}">  
+                            <div class="card shadow-sm position-relative">
+                                <img src="{{ asset('public') }}/${file.path}" class="card-img-top" style="height:150px;object-fit:cover;">
+                                <button class="btn btn-danger btn-sm position-absolute" 
+                                        style="top:5px; right:5px;" 
+                                        onclick="deleteFile(${file.id})">
+                                    &times;
+                                </button>
+                            </div>
+                        </div>
+                        `;
+                        $('.row.mt-2').append(html); // Append to existing container
+                    });
+                }
+            },
+            error: function(err) {
+                console.error(err.responseText || err);
+                alert('Error submitting the form.');
+            }
         });
+
+
     }
 });
 
